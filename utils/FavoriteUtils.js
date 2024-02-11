@@ -1,0 +1,1 @@
+// utils pro pridavani do favorite

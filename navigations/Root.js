@@ -10,13 +10,15 @@ import { NavigationContainer } from "@react-navigation/native";
 
 import Ionicons from '@expo/vector-icons/Ionicons'
 import MoreNavigation from "./MoreNavigation";
+import RecipeNavigation from "./RecipeNavigation";
+import FavoriteNavigation from "./FavoriteNavigation";
 
 
 const Tab = createBottomTabNavigator();
 
 
 
-export default function Root() {
+export default function Root({cart, setCart, favorites, setFavorites}) {
     return (
         <NavigationContainer>
             <Tab.Navigator
@@ -27,9 +29,9 @@ export default function Root() {
 
                         if (rn === "Menu") {
                             iconName = focused ? 'restaurant' : 'restaurant-outline'
-                        } else if (rn === "Recipes") {
+                        } else if (rn === "Recipe Navigation") {
                             iconName = focused ? 'book' : 'book-outline'
-                        } else if (rn === "Favorites") {
+                        } else if (rn === "FavoriteNavigation") {
                             iconName = focused ? 'heart' : 'heart-outline'
                         } else if (rn === "Shopping List") {
                             iconName = focused ? 'cart' : 'cart-outline'
@@ -45,9 +47,15 @@ export default function Root() {
             >
                 {/* <Tab.Screen name="Home" component={Home} /> */}
                 <Tab.Screen name="Menu" title component={Menu} options={{title: "Jídelníček"}} />
-                <Tab.Screen name="Recipes" component={Recipes} options={{title: "Recepty"}} />
-                <Tab.Screen name="Favorites" component={Favorites} options={{title: "Oblíbené"}} />
-                <Tab.Screen name="Shopping List" component={ShoppingList} options={{title: "Nákupní seznam"}} />
+                <Tab.Screen name="Recipe Navigation" options={{headerShown: false, title: "Recepty"}}>
+                    {() => <RecipeNavigation cart={cart} setCart={setCart} favorites={favorites} setFavorites={setFavorites} />}
+                </Tab.Screen>
+                <Tab.Screen name="FavoriteNavigation" options={{headerShown: false, title: "Oblíbené"}}>
+                    {() => <FavoriteNavigation favorites={favorites} setFavorites={setFavorites} cart={cart} setCart={setCart} />}
+                </Tab.Screen>
+                <Tab.Screen name="Shopping List" options={{title: "Nákupní seznam"}}>
+                    {() => <ShoppingList cart={cart} setCart={setCart} />}
+                </Tab.Screen>
                 <Tab.Screen name="More Navigation" component={MoreNavigation} options={{headerShown: false, title: "Více"}} />
             </Tab.Navigator>
         </NavigationContainer>

@@ -4,6 +4,7 @@ import Root from './navigations/Root';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen'
 
+
 SplashScreen.preventAutoHideAsync();
 
 const getFonts = () => Font.loadAsync({
@@ -18,6 +19,9 @@ export default function App() {
 
   const [appIsReady, setAppIsReady] = useState(false);
 
+  const [cart, setCart] = useState([]);
+
+  const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
     async function prepare() {
@@ -44,7 +48,7 @@ export default function App() {
   }
   return (
     <View className="flex-1" onLayout={onLayoutRootView}>
-      <Root />
+      <Root cart={cart} setCart={setCart} favorites={favorites} setFavorites={setFavorites} />
     </View>
   )
 }

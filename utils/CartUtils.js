@@ -1,0 +1,1 @@
+// utils pro metody addToCart atd

@@ -6,36 +6,37 @@ import { useState } from 'react';
 import IconButton from '../components/IconButton';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function Recipe({ route, cart, setCart, favorites, setFavorites }) {
+export default function Favorite({ route, cart, setCart, favorites, setFavorites, navigation }) {
 
     const { name, alergens, category, cook_time, description, diet, image, ingredients, nutrition, prepare_time, servings, steps, price } = route.params.data;
-    const { id } = route.params.id
+    const { id } = route.params.id;
 
     // console.log(route.params.data)
 
     const [checkedSteps, setCheckedSteps] = useState(new Array(steps.length).fill(false));
 
     const handleCheckboxChange = (index) => {
-        const updatedCheckedSteps = [...checkedSteps];
-        updatedCheckedSteps[index] = !updatedCheckedSteps[index];
-        setCheckedSteps(updatedCheckedSteps);
+        const updatedCheckedSteps = [...checkedSteps]; 
+        updatedCheckedSteps[index] = !updatedCheckedSteps[index]; 
+        setCheckedSteps(updatedCheckedSteps); 
     };
 
     const addToCart = async () => {
         try {
             const updatedCart = [...cart];
+            
             ingredients.forEach((ingredient) => {
-                const existingItem = updatedCart.findIndex((item) =>
-                    item.title === ingredient.title && item.unit === ingredient.unit
-                );
+                const existingItem = updatedCart.findIndex((item) => 
+                item.title === ingredient.title && item.unit === ingredient.unit
+            );
 
-                if (existingItem !== -1) {
-                    const updatedIngredient = { ...ingredient };
-                    updatedIngredient.amount += updatedCart[existingItem].amount;
-                    updatedCart[existingItem] = updatedIngredient;
-                } else {
-                    updatedCart.push(ingredient);
-                }
+            if (existingItem !== -1) {
+                const updatedIngredient = { ...ingredient };
+                updatedIngredient.amount += updatedCart[existingItem].amount;
+                updatedCart[existingItem] = updatedIngredient;
+            } else {
+                updatedCart.push(ingredient);
+            }
             });
 
             await AsyncStorage.setItem('shoppingList', JSON.stringify(updatedCart));
@@ -45,55 +46,53 @@ export default function Recipe({ route, cart, setCart, favorites, setFavorites }
         }
     };
 
-    const addToFavorites = async () => {
+    
+
+    const removeFromFavorites = async (recipeId) => {
         try {
-            const recipeToAdd = route.params.data;
-            const recipeId = route.params.id
-
-            const isAlreadyInFavorites = favorites.some(favorite => favorite.id === recipeId);
-
-            if (isAlreadyInFavorites) {
-                return (
-                    Alert.alert(
-                        'Nelze přidat',
-                        'Recept je již označen jako oblíbený', [
-                        {
-                            text: 'OK',
-                            onPress: () => console.log('Recipe already exists in favorites.')
-                        }
-                    ])
-                )
-            }
-
-            const favoriteRecipe = { id: recipeId, data: recipeToAdd }
-
-            updatedFavorites = [favoriteRecipe, ...favorites]
-
+            const updatedFavorites = favorites.filter(favorite => favorite.id !== recipeId);
+    
             await AsyncStorage.setItem('favorites', JSON.stringify(updatedFavorites));
             setFavorites(updatedFavorites);
-
-            // console.log(favorites)
+    
+            console.log('Recipe removed from favorites:', recipeId);
         } catch (error) {
-            console.error('Error adding to favorites:', error);
+            console.error('Error removing from favorites:', error);
         }
-    }
+    };
 
-    // console.log(route.params.data)
+    const handleRemove = () => {
+        Alert.alert(
+            'Odebrání receptu',
+            'Opravdu chcete odebrat recept z oblíbených?', [
+                {
+                    text: 'Zrušit',
+                    onPress: () => console.log('Recipe not removed')
+                },
+            {
+                text: 'OK',
+                onPress: () => {
+                    removeFromFavorites(route.params.id);
+                    navigation.goBack();
+                }
+            }
+        ])
+    }
 
     return (
         <ScrollView className="flex flex-col" nestedScrollEnabled={true}>
             <View className="justify-center items-center top-4 gap-3 flex flex-1">
                 <Text className="text-3xl font-bold">{name}</Text>
                 <Image style={{ width: 200, height: 200, resizeMode: 'center', borderRadius: 40 }} source={{ uri: image }} />
-                <Text className="text-xl flex flex-shrink mx-3">{description}</Text>
+                <Text className="text-xl">{description}</Text>
 
-                {/* like button, addToCart button, menu button -> pridat funkce */}
+                {/* trash button, addToCart button, menu button -> pridat funkce */}
                 <View className="flex-row">
-                    <IconButton icon={"heart"} onPress={() => addToFavorites()} />
-                    <IconButton icon={"restaurant"} onPress={() => {}} />
-                    <IconButton icon={"cart"} onPress={() => addToCart()} />
+                    <IconButton icon={"trash"} onPress={() => handleRemove()}  />
+                    <IconButton icon={"restaurant"} onPress={() => {}}  />
+                    <IconButton icon={"cart"} onPress={() => addToCart()}  />
                 </View>
-
+                
                 <View className="flex-row gap-3">
                     <Text>Příprava: {prepare_time} min</Text>
                     <Text>Vaření: {cook_time} min</Text>
@@ -112,7 +111,7 @@ export default function Recipe({ route, cart, setCart, favorites, setFavorites }
                         )}
                         scrollEnabled={false}
                     />
-
+                    
                 </View>
                 <View className="flex flex-1 gap-2 border rounded-lg">
                     <Text className="font-bold text-lg">Výživové hodnoty:</Text>
@@ -145,7 +144,6 @@ export default function Recipe({ route, cart, setCart, favorites, setFavorites }
                     <Text className="font-bold">Alergeny: {alergens.length > 1 ? alergens.join(', ') : alergens}</Text>
                     <Text>Kategorie: {category.length > 1 ? category.join(', ') : category}</Text>
                     <Text>Stravování: {diet.length > 1 ? diet.join(', ') : diet}</Text>
-                    <Text className="font-bold text-xs mt-5">Přibližná cena a výživové hodnoty jsou vždy uvedeny pro 1 porci.</Text>
                 </View>
 
                 {/* bottom empty area */}
