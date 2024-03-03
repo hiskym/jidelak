@@ -1,98 +1,88 @@
-import { View, Text, Image, FlatList, Button, Alert } from 'react-native'
+import { View, Text, Image, FlatList, Alert, ActivityIndicator } from 'react-native'
 import Checkbox from 'expo-checkbox';
 import React from 'react'
 import { ScrollView } from 'react-native';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import IconButton from '../components/IconButton';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useCartStore } from '../store/CartStore';
+import { useUserStore } from '../store/UserStore';
+import MenuAddDetails from '../components/MenuAddDetails';
+import { fetchRecipeIngredients, fetchRecipeData } from '../utils/recipeUtils';
+import { handleAddToCartRecipe } from '../utils/CartUtils';
+import { removeFromFavorites } from '../utils/FavoriteUtils';
+import { translateNutrition } from '../utils/recipeUtils';
+import { handleCheckboxChange } from '../utils/checkboxUtils';
 
-export default function Favorite({ route, cart, setCart, favorites, setFavorites, navigation }) {
+export default function Favorite({ route, navigation }) {
 
-    const { name, alergens, category, cook_time, description, diet, image, ingredients, nutrition, prepare_time, servings, steps, price } = route.params.data;
-    const { id } = route.params.id;
+    const { addToCartRecipe } = useCartStore();
 
-    // console.log(route.params.data)
+    const {user} = useUserStore();
 
-    const [checkedSteps, setCheckedSteps] = useState(new Array(steps.length).fill(false));
+    // const { name, alergens, category, cook_time, description, diet, image, nutrition, prepare_time, servings, steps, price } = route.params.data;
+    // const { id } = route.params.recipeId;
 
-    const handleCheckboxChange = (index) => {
-        const updatedCheckedSteps = [...checkedSteps]; 
-        updatedCheckedSteps[index] = !updatedCheckedSteps[index]; 
-        setCheckedSteps(updatedCheckedSteps); 
-    };
+    const [recipeData, setRecipeData] = useState(null);
+    const [recipeIngredients, setRecipeIngredients] = useState(null)
+    const [checkedSteps, setCheckedSteps] = useState([]);
 
-    const addToCart = async () => {
-        try {
-            const updatedCart = [...cart];
-            
-            ingredients.forEach((ingredient) => {
-                const existingItem = updatedCart.findIndex((item) => 
-                item.title === ingredient.title && item.unit === ingredient.unit
-            );
-
-            if (existingItem !== -1) {
-                const updatedIngredient = { ...ingredient };
-                updatedIngredient.amount += updatedCart[existingItem].amount;
-                updatedCart[existingItem] = updatedIngredient;
-            } else {
-                updatedCart.push(ingredient);
-            }
-            });
-
-            await AsyncStorage.setItem('shoppingList', JSON.stringify(updatedCart));
-            setCart(updatedCart);
-        } catch (error) {
-            console.error('Error adding to cart:', error);
-        }
-    };
-
-    
-
-    const removeFromFavorites = async (recipeId) => {
-        try {
-            const updatedFavorites = favorites.filter(favorite => favorite.id !== recipeId);
-    
-            await AsyncStorage.setItem('favorites', JSON.stringify(updatedFavorites));
-            setFavorites(updatedFavorites);
-    
-            console.log('Recipe removed from favorites:', recipeId);
-        } catch (error) {
-            console.error('Error removing from favorites:', error);
-        }
-    };
+    useEffect(() => {
+        fetchRecipeData(route.params.recipeId, setRecipeData, setCheckedSteps);
+        fetchRecipeIngredients(route.params.recipeId, setRecipeIngredients);
+    }, [route.params.recipeId]);
 
     const handleRemove = () => {
         Alert.alert(
             'Odebrání receptu',
             'Opravdu chcete odebrat recept z oblíbených?', [
-                {
-                    text: 'Zrušit',
-                    onPress: () => console.log('Recipe not removed')
-                },
+            {
+                text: 'Zrušit',
+                onPress: () => console.log('Recipe not removed')
+            },
             {
                 text: 'OK',
                 onPress: () => {
-                    removeFromFavorites(route.params.id);
+                    removeFromFavorites(route.params.recipeId, user.uid);
                     navigation.goBack();
                 }
             }
         ])
     }
 
+    const [showDetails, setShowDetails] = useState(false);
+
+    const handleShowDetails = () => {
+        setShowDetails(true);
+    }
+
+    if (!recipeData) {
+        return <ActivityIndicator size="small" color="tomato" className="flex-1 justify-center rounded-sm scale-150" />;
+    }
+
+    const { name, alergens, category, cook_time, description, diet, image, nutrition, prepare_time, servings, steps, price } = recipeData;
+
     return (
         <ScrollView className="flex flex-col" nestedScrollEnabled={true}>
+            {/* <Button title='id' onPress={() => console.log(route.params.recipeId)} /> */}
             <View className="justify-center items-center top-4 gap-3 flex flex-1">
                 <Text className="text-3xl font-bold">{name}</Text>
                 <Image style={{ width: 200, height: 200, resizeMode: 'center', borderRadius: 40 }} source={{ uri: image }} />
                 <Text className="text-xl">{description}</Text>
 
-                {/* trash button, addToCart button, menu button -> pridat funkce */}
                 <View className="flex-row">
-                    <IconButton icon={"trash"} onPress={() => handleRemove()}  />
-                    <IconButton icon={"restaurant"} onPress={() => {}}  />
-                    <IconButton icon={"cart"} onPress={() => addToCart()}  />
+                    <IconButton icon={"trash"} onPress={() => handleRemove()} />
+                    <IconButton icon={"restaurant"} onPress={handleShowDetails} />
+                    <IconButton icon={"cart"} onPress={() => handleAddToCartRecipe(recipeIngredients, addToCartRecipe )} />
                 </View>
-                
+
+                {showDetails && (
+                    <MenuAddDetails
+                        showDetails={showDetails}
+                        setShowDetails={setShowDetails}
+                        recipeId={route.params.recipeId}
+                        userId={user.uid}
+                    />
+                )}
                 <View className="flex-row gap-3">
                     <Text>Příprava: {prepare_time} min</Text>
                     <Text>Vaření: {cook_time} min</Text>
@@ -102,26 +92,32 @@ export default function Favorite({ route, cart, setCart, favorites, setFavorites
 
                 <View className="flex flex-1 gap-2 border rounded-lg">
                     <Text className="font-bold text-lg">Ingredience:</Text>
-                    <FlatList
-                        data={ingredients}
-                        renderItem={({ item }) => (
-                            <View className="flex flex-row items-center w-96 m-1 left-2">
-                                <Text>{item.amount} {item.unit} {item.title}</Text>
-                            </View>
-                        )}
-                        scrollEnabled={false}
-                    />
-                    
+                    {!recipeIngredients ? (
+                        <View className="flex flex-row items-center w-96 m-1 left-2">
+                            <ActivityIndicator size="small" color="tomato" className="flex-1 justify-center rounded-sm scale-150 p-4" />
+                        </View>
+                    ) : (
+                        <FlatList
+                            data={recipeIngredients}
+                            renderItem={({ item }) => (
+                                <View className="flex flex-row items-center w-96 m-1 left-2">
+                                    <Text>{item.amount} {item.unit} {item.title}</Text>
+                                </View>
+                            )}
+                            scrollEnabled={false}
+                        />
+                    )}
                 </View>
                 <View className="flex flex-1 gap-2 border rounded-lg">
                     <Text className="font-bold text-lg">Výživové hodnoty:</Text>
                     <FlatList
-                        data={nutrition}
+                        data={Object.entries(nutrition).sort(([keyA], [keyB]) => keyA.localeCompare(keyB))}
                         renderItem={({ item }) => (
                             <View className="flex flex-row items-center w-96 m-1 left-2">
-                                <Text>{item.title} {item.amount}</Text>
+                                <Text>{translateNutrition[item[0]]}: {item[0] === "calories" ? ` ${item[1]} kcal` : ` ${item[1]} g`}</Text>
                             </View>
                         )}
+                        keyExtractor={(item, index) => index.toString()}
                         scrollEnabled={false}
                     />
                 </View>
@@ -132,7 +128,7 @@ export default function Favorite({ route, cart, setCart, favorites, setFavorites
                         data={steps}
                         renderItem={({ item, index }) => (
                             <View className="flex flex-row items-center w-96 m-1">
-                                <Checkbox value={checkedSteps[index]} onValueChange={() => handleCheckboxChange(index)} className="m-2" />
+                                <Checkbox value={checkedSteps[index]} onValueChange={() => handleCheckboxChange(index, checkedSteps, setCheckedSteps)} className="m-2" />
                                 <Text className="flex flex-shrink">{item}</Text>
                             </View>
                         )}

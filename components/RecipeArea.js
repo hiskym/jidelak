@@ -9,7 +9,7 @@ export default function RecipeArea({ recipes, navigation }) {
                 return (
                     <TouchableOpacity key={recipe.id} onPress={() => {navigation.navigate('RecipeDetail', recipe)}}>
                         <RecipeCard
-                            // key={recipe.id}
+                            key={recipe.id}
                             id={recipe.id}
                             image={recipe.data.image}
                             name={recipe.data.name}

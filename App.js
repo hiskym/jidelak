@@ -3,6 +3,10 @@ import { useState, useEffect, useCallback } from 'react';
 import Root from './navigations/Root';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen'
+import AppNavigation from './navigations/AppNavigation';
+import { FIREBASE_AUTH } from './firebaseConfig';
+import { onAuthStateChanged } from 'firebase/auth';
+import { useUserStore } from './store/UserStore';
 
 
 SplashScreen.preventAutoHideAsync();
@@ -19,9 +23,14 @@ export default function App() {
 
   const [appIsReady, setAppIsReady] = useState(false);
 
-  const [cart, setCart] = useState([]);
+  const { setUser } = useUserStore();
 
-  const [favorites, setFavorites] = useState([]);
+  useEffect(() => {
+    onAuthStateChanged(FIREBASE_AUTH, (user) => {
+      console.log('user', user)
+      setUser(user)
+    })
+  }, [])
 
   useEffect(() => {
     async function prepare() {
@@ -37,6 +46,8 @@ export default function App() {
     prepare();
   }, []);
 
+  
+
   const onLayoutRootView = useCallback(async () => {
     if (appIsReady) {
       await SplashScreen.hideAsync();
@@ -48,7 +59,8 @@ export default function App() {
   }
   return (
     <View className="flex-1" onLayout={onLayoutRootView}>
-      <Root cart={cart} setCart={setCart} favorites={favorites} setFavorites={setFavorites} />
+      {/* <Root cart={cart} setCart={setCart} favorites={favorites} setFavorites={setFavorites} /> */}
+      <AppNavigation />
     </View>
   )
 }

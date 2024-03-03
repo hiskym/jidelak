@@ -1,0 +1,36 @@
+import { ScrollView, Text, Button, ActivityIndicator } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { useUserStore } from '../store/UserStore'
+import { fetchAllCarts } from '../utils/CartUtils'
+import CartItems from '../components/CartItems'
+
+export default function CartHistory({ navigation }) {
+
+    const { user } = useUserStore();
+
+    const [loading, setLoading] = useState(false);
+
+    const [cartsData, setCartsData] = useState([]);
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            fetchAllCarts(user.uid, setCartsData, setLoading);
+        });
+
+        return unsubscribe;
+    }, [navigation]);
+
+    return (
+        <ScrollView className="mt-5">
+            {loading && <ActivityIndicator size="small" color="tomato" className="flex-1 justify-center rounded-sm scale-150" />}
+
+            {/* <Button title='carts' onPress={() => { console.log(cartsData) }} /> */}
+            {cartsData.length === 0 ? (
+                <Text className="text-center m-2 text-xl">Nemáte uložený žádný nákupní seznam. Přidejte si nějaký!</Text>
+            ): (
+                <CartItems carts={cartsData} navigation={navigation} />
+            )}
+            
+        </ScrollView>
+    )
+}

@@ -1,4 +1,4 @@
-import { View, Text, ActivityIndicator } from 'react-native'
+import { View, Button, Text, ActivityIndicator } from 'react-native'
 import React, { useState, useEffect } from 'react'
 // import SearchBar from '../components/SearchBar'
 import RecipeArea from '../components/RecipeArea'
@@ -23,7 +23,7 @@ export default function Recipes({navigation}) {
   };
 
 // kdyz je hledani prazdne, tak ziskat vsechny + pridat limit(20), orderBy("name")
-  
+
   const getAllRecipes = async () => {
     setLoading(true);
     setErr("");
@@ -32,9 +32,15 @@ export default function Recipes({navigation}) {
       // upravit query - přidat limit
 
       const querySnapshot = await getDocs(recipesRef);
+      // console.log(recipesRef)
       setRecipes(querySnapshot.docs.map((doc) => ({
         id: doc.id,
-        data: doc.data(),
+        // data: doc.data(),
+        data: {
+          image: doc.data().image,
+          name: doc.data().name,
+          description: doc.data().description
+        }
     })));
     } catch (error) {
       console.log("Error:", error);
@@ -46,6 +52,7 @@ export default function Recipes({navigation}) {
 
   useEffect(() => {
     getAllRecipes();
+    console.log(recipes)
   }, []);
 
   // console.log(recipes)
@@ -54,6 +61,7 @@ export default function Recipes({navigation}) {
 
   return (
     <ScrollView className="flex-1">
+      {/* <Button onPress={() => console.log(recipes)} title={"console recipes"} /> */}
       <SearchBar 
         lightTheme={true}
         placeholder="Míchaná vejce..."

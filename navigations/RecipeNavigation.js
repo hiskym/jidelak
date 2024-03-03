@@ -6,7 +6,7 @@ import Recipe from '../screens/Recipe';
 
 const Stack = createNativeStackNavigator()
 
-export default function RecipeNavigation({cart, setCart, favorites, setFavorites}) {
+export default function RecipeNavigation() {
 
     const backTitle = "Zpět";
 
@@ -14,7 +14,8 @@ export default function RecipeNavigation({cart, setCart, favorites, setFavorites
     <Stack.Navigator>
         <Stack.Screen name="Recipes" component={Recipes} options={{title: "Recepty"}} />
         <Stack.Screen name="RecipeDetail" options={{title: "Detail receptu", headerBackTitle: backTitle}}>
-          {(props) => <Recipe {...props} cart={cart} setCart={setCart} favorites={favorites} setFavorites={setFavorites} />}
+          {(props) => <Recipe {...props} />
+            }
         </Stack.Screen>
     </Stack.Navigator>
   )

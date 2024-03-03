@@ -1,6 +1,8 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore'
 import {collection} from 'firebase/firestore'
+import { initializeAuth, getReactNativePersistence, browserLocalPersistence } from 'firebase/auth'
+import AsyncStorage, { ReactNativeAsyncStorage } from '@react-native-async-storage/async-storage';
 
 // Initialize Firebase
 
@@ -15,23 +17,15 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-// console.log(db);
-// console.log(collection(db, "recipes"))
+const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(AsyncStorage)
+});
 
-export const recipesRef = collection(db, "recipes")
-// console.log(colRef)
-// const colRef = collection(db, "/recipes")
-// console.log(colRef);
-
-// async function myAsyncFunction() {
-//     const querySnapshot = await getDocs(collection(db, "recipes"));
-//     querySnapshot.forEach((doc) => {
-//       console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
-//     });
-// }
-
-// myAsyncFunction();
-
-
-// For more information on how to access Firebase in your project,
-// see the Firebase documentation: https://firebase.google.com/docs/web/setup#access-firebase
+export const recipesRef = collection(db, "recipes");
+export const usersRef = collection(db, 'users');
+export const mealsRef = collection (db, 'meals')
+export const favoritesRef = collection(db, 'favorites')
+export const ingredientsRef = collection(db, 'ingredients');
+export const recipeIngredientsRef = collection(db, 'recipeIngredients')
+export const cartsRef = collection(db, 'carts')
+export const FIREBASE_AUTH = auth;

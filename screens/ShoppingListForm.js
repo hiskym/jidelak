@@ -3,7 +3,6 @@ import React from 'react'
 import { Formik } from 'formik';
 import * as yup from 'yup'
 import IconButton from '../components/IconButton';
-IconButton
 
 const itemSchema = yup.object({
     amount: yup.number().required('Je nutné zadat množství').min(1).typeError('Množství musí být číslo'),
