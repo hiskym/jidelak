@@ -1,33 +1,34 @@
-import { View, Text, Button, TextInput, TouchableOpacity, ScrollView, Alert, StyleSheet } from 'react-native'
+import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Formik } from 'formik'
 import * as yup from 'yup';
 import { usersRef } from '../firebaseConfig';
-import { doc, setDoc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc } from 'firebase/firestore';
 import { useUserStore } from '../store/UserStore';
 import { Picker } from '@react-native-picker/picker';
+import { styles } from '../styles/GlobalStyles';
+import { alergiesValues, activities, goalValues, ageValues, weightValues, heightValues, genderValues, dietValues } from '../utils/PickerValues';
 
 // dotaznik, aby se cloveku vytvoril sam jidelnicek
 
 const surveySchema = yup.object({
   activity: yup.string().required('Zvolte stupeň aktivity'),
-  //alergies mozna zmenit na array, respektive picker?
-  alergies: yup.string().required('Zvolte své alergie'),
-  age: yup.number().required('Zadejte svůj věk').min(1).typeError('Věk musí být číslo'),
-  weight: yup.number().required('Zadejte svoji váhu v kg').min(1).typeError('Váha musí být číslo'),
-  height: yup.number().required('Zadejte svoji výšku cm').min(1).typeError('Výška musí být číslo'),
+  alergies: yup.string().required('Zvolte své alergie').typeError('Zadejte své alergie'),
+  age: yup.number().required('Zadejte svůj věk').min(1, 'Věk musí být alespoň 13 let').typeError('Věk musí být číslo'),
+  weight: yup.number().required('Zadejte svoji váhu v kg').min(1, 'Váha musí být alespoň 20 kg').typeError('Váha musí být číslo'),
+  height: yup.number().required('Zadejte svoji výšku cm').min(1, 'Výška musí být alespoň 100 cm').typeError('Výška musí být číslo'),
   gender: yup.string().required('Zvolte svoje biologické pohlaví (muž nebo žena)'),
   goal: yup.string().required('Zvolte svůj cíl'),
-  diet: yup.string().required('Zvolte preferovaný způsob stravování'),
+  diet: yup.string().required('Zvolte preferovaný způsob stravování').typeError('Zadejte svou dietu'),
 })
 
-export default function Survey({navigation}) {
+export default function Survey({ navigation }) {
 
   const { user } = useUserStore();
 
-  const [alergies, setAlergies] = useState('');
+  const [alergies, setAlergies] = useState([]);
 
-  const [diet, setDiet] = useState(''); //musi byt array
+  const [diet, setDiet] = useState([]); //musi byt array
 
   const [macros, setMacros] = useState({});
 
@@ -154,7 +155,8 @@ export default function Survey({navigation}) {
       [
         {
           text: 'Zrušit',
-          onPress: () => { console.log('canceled')
+          onPress: () => {
+            console.log('canceled')
           }
         },
         {
@@ -168,120 +170,130 @@ export default function Survey({navigation}) {
 
   return (
     <ScrollView className="flex flex-auto">
-      <View className="gap-2 m-2 ">
-        <Text className="text-center mt-2 text-lg">Pro správné fungování aplikace je nutné vyplnit následující pole. 😊</Text>
-        <Text className="text-center text-lg">Pokud je nevyplníte, není možné dostávat doporučení a individualizované jídelníčky.</Text>
+      <View className="p-3 items-center bg-teal-50 mb-4 rounded-b-2xl shadow-sm">
+        <Text className="text-center mt-2 text-lg text-slate-900">Pro správné fungování aplikace je nutné vyplnit následující pole. 😊</Text>
+        <Text className="text-center text-lg text-slate-900">Pokud je nevyplníte, není možné dostávat doporučení a individualizované jídelníčky.</Text>
+        <Text className="text-center text-lg text-slate-900">V každém poli musíte vybrat jednu z hodnot.</Text>
       </View>
 
       <Formik
         initialValues={{ activity: activity, alergies: alergies, age: age, weight: weight, height: height, gender: gender, goal: goal, diet: diet }}
         validationSchema={surveySchema}
         onSubmit={(values, actions) => {
-          handleUserInfo(values.activity, values.alergies, parseFloat(values.age), parseFloat(values.weight), parseFloat(values.height), values.gender, values.goal, values.diet)
+          handleUserInfo(values.activity, values.alergies.split(','), parseFloat(values.age), parseFloat(values.weight), parseFloat(values.height), values.gender, values.goal, values.diet.split(','))
           actions.resetForm();
         }}
       >
         {(props) => (
-          <View className="items-center mt-2 w-full p-4">
+          <View className="items-center w-full px-4 pb-4">
             <Picker
               selectedValue={props.values.activity}
               onValueChange={props.handleChange('activity')}
-              style={styles.picker}
+              style={styles.pickerSurvey}
+              mode='dropdown'
             >
-              <Picker.Item label="Zvolte stupeň aktivity" value="" />
-              <Picker.Item label="Žádná" value="zero" />
-              <Picker.Item label="1-2 tréninky týdně" value="light" />
-              <Picker.Item label="3-5 tréninků týdně" value="moderate" />
-              <Picker.Item label="6-7 tréninků týdně" value="heavy" />
+              {activities.map((activity, key) => (
+                <Picker.Item key={key} label={activity.label} value={activity.value} />
+              ))}
             </Picker>
-
             <Text className="text-red-600">{props.touched.activity && props.errors.activity}</Text>
-            <TextInput
-              value={props.values.alergies}
-              placeholder='alergie'
-              autoCapitalize='none'
-              onChangeText={props.handleChange('alergies')}
-              onBlur={props.handleBlur('alergies')}
-              className="border border-stone-500 p-2.5 text-lg rounded-lg w-full h-16" />
+
+            <Picker
+              selectedValue={props.values.alergies}
+              onValueChange={props.handleChange('alergies')}
+              style={styles.pickerSurvey}
+            >
+              {alergiesValues.map((alergy, key) => (
+                <Picker.Item key={key} label={alergy.label} value={alergy.value.join(',')} />
+              ))}
+            </Picker>
             <Text className="text-red-600">{props.touched.alergies && props.errors.alergies}</Text>
-            <TextInput
-              value={props.values.age}
-              placeholder='Věk'
-              autoCapitalize='none'
-              onChangeText={props.handleChange('age')}
-              onBlur={props.handleBlur('age')}
-              className="border border-stone-500 p-2.5 text-lg rounded-lg w-full h-16" />
+
+            <Picker
+              selectedValue={props.values.age}
+              onValueChange={(ageValue) => {
+                props.setFieldValue('age', ageValue)
+              }}
+              style={styles.pickerSurvey}
+            >
+              {ageValues.map((ageValue, key) => (
+                <Picker.Item key={key} label={ageValue.label} value={ageValue.value} />
+              ))}
+            </Picker>
             <Text className="text-red-600">{props.touched.age && props.errors.age}</Text>
-            <TextInput
-              value={props.values.weight}
-              placeholder='Váha'
-              autoCapitalize='none'
-              onChangeText={props.handleChange('weight')}
-              onBlur={props.handleBlur('weight')}
-              className="border border-stone-500 p-2.5 text-lg rounded-lg w-full h-16" />
+
+            <Picker
+              selectedValue={props.values.weight}
+              onValueChange={(weightValue) => {
+                props.setFieldValue('weight', weightValue)
+              }}
+              style={styles.pickerSurvey}
+              // itemStyle={{height: 64}}
+            >
+              {weightValues.map((weightValue, key) => (
+                <Picker.Item key={key} label={weightValue.label} value={weightValue.value} />
+              ))}
+            </Picker>
             <Text className="text-red-600">{props.touched.weight && props.errors.weight}</Text>
-            <TextInput
-              value={props.values.height}
-              placeholder='výška'
-              autoCapitalize='none'
-              onChangeText={props.handleChange('height')}
-              onBlur={props.handleBlur('height')}
-              className="border border-stone-500 p-2.5 text-lg rounded-lg w-full h-16" />
+
+            <Picker
+              selectedValue={props.values.height}
+              onValueChange={(heightValue) => {
+                props.setFieldValue('height', heightValue)
+              }}
+              style={styles.pickerSurvey}
+            >
+              {heightValues.map((heightValue, key) => (
+                <Picker.Item key={key} label={heightValue.label} value={heightValue.value} />
+              ))}
+            </Picker>
             <Text className="text-red-600">{props.touched.height && props.errors.height}</Text>
+
             <Picker
               selectedValue={props.values.gender}
               onValueChange={props.handleChange('gender')}
-              style={styles.picker}
+              style={styles.pickerSurvey}
             >
-              <Picker.Item label="Zvolte své biologické pohlaví" value="" />
-              <Picker.Item label="muž" value="male" />
-              <Picker.Item label="žena" value="female" />
+              {genderValues.map((gender, key) => (
+                <Picker.Item key={key} label={gender.label} value={gender.value} />
+              ))}
             </Picker>
             <Text className="text-red-600">{props.touched.gender && props.errors.gender}</Text>
+
             <Picker
               selectedValue={props.values.goal}
               onValueChange={props.handleChange('goal')}
-              style={styles.picker}
+              style={styles.pickerSurvey}
             >
-              <Picker.Item label="Zvolte svůj cíl" value="" />
-              <Picker.Item label="zhubnout" value="cut" />
-              <Picker.Item label="udržet se" value="maintain" />
-              <Picker.Item label="nabrat" value="bulk" />
+              {goalValues.map((goal, key) => (
+                <Picker.Item key={key} label={goal.label} value={goal.value} />
+              ))}
             </Picker>
             <Text className="text-red-600">{props.touched.goal && props.errors.goal}</Text>
-            <TextInput
-              value={props.values.diet}
-              placeholder='dieta'
-              autoCapitalize='none'
-              onChangeText={props.handleChange('diet')}
-              onBlur={props.handleBlur('diet')}
-              className="border border-stone-500 p-2.5 text-lg rounded-lg w-full h-16" />
+
+            <Picker
+              selectedValue={props.values.diet}
+              onValueChange={props.handleChange('diet')}
+              style={styles.pickerSurvey}
+            >
+              {dietValues.map((diet, key) => (
+                <Picker.Item key={key} label={diet.label} value={diet.value} />
+              ))}
+            </Picker>
             <Text className="text-red-600">{props.touched.diet && props.errors.diet}</Text>
-            <View className="flex flex-row gap-5">
-              <TouchableOpacity onPress={() => handleCancel()}>
-                <Text className="text-xl text-red-500 font-bold">Nechci vyplnit</Text>
+
+            <View className="flex flex-row mb-5">
+              <TouchableOpacity onPress={() => handleCancel()} className="bg-red-500 rounded-xl p-3 mr-2">
+                <Text className="text-xl text-white font-bold">Nechci vyplnit</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={props.handleSubmit}>
-                <Text className="text-xl text-blue-500 font-bold">Nastavit údaje</Text>
+              <TouchableOpacity onPress={props.handleSubmit} className="bg-teal-600 rounded-xl p-3 ml-2">
+                <Text className="text-xl text-white font-bold">Nastavit údaje</Text>
               </TouchableOpacity>
             </View>
-            
+
           </View>
         )}
       </Formik>
     </ScrollView>
   )
 }
-
-const styles = StyleSheet.create({
-  picker: {
-    height: 64, 
-    width: '100%', 
-    borderColor: 'rgb(120 113 108)', 
-    borderWidth: 1, 
-    borderRadius: 8, 
-    alignContent: 'center', 
-    justifyContent: 'center', 
-    overflow: 'hidden',
-  }
-})

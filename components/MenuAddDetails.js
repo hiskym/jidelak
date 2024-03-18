@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { addToMenu } from '../utils/menuUtils';
+import { type } from '../utils/PickerValues';
+import { styles } from '../styles/GlobalStyles';
+import IconButton from './IconButton';
 
 export default function MenuAddDetails({ setShowDetails, userId, recipeId }) {
 
@@ -13,29 +16,6 @@ export default function MenuAddDetails({ setShowDetails, userId, recipeId }) {
     const [selectedDay, setSelectedDay] = useState('');
     const [selectedType, setSelectedType] = useState('');
     const [showNote, setShowNote] = useState(false);
-
-    const type = [
-        {
-            'label': 'Vyberte typ',
-            'value': ''
-        },
-        {
-            'label': 'Snídaně',
-            'value': 'breakfast'
-        },
-        {
-            'label': 'Oběd',
-            'value': 'lunch'
-        },
-        {
-            'label': 'Večeře',
-            'value': 'dinner'
-        },
-        {
-            'label': 'Svačinka',
-            'value': 'snack'
-        },
-    ]
 
     const handleDetailsConfirm = () => {
 
@@ -70,36 +50,10 @@ export default function MenuAddDetails({ setShowDetails, userId, recipeId }) {
         setSelectedType('');
     }
 
-    const showDatePicker = () => {
-        setDatePickerVisibility(true);
-    };
-
-    const hideDatePicker = () => {
-        setDatePickerVisibility(false);
-    };
-
     const handleConfirmDate = (date) => {
-        hideDatePicker();
+        setDatePickerVisibility(false);
         setSelectedDay(date);
     };
-
-    const handleShowPicker = () => {
-        setShowPicker(true);
-    }
-
-    const handleConfirmType = () => {
-        console.log('Selected option:', selectedType);
-        setShowPicker(false);
-        // setSelectedType(selectedType);
-    }
-
-    const handleShowNote = () => {
-        setShowNote(true);
-    }
-
-    const handleConfirmNote = () => {
-        setShowNote(false);
-    }
 
     const showTypeName = () => {
         const selectedTypeObj = type.find(item => item.value === selectedType);
@@ -107,10 +61,10 @@ export default function MenuAddDetails({ setShowDetails, userId, recipeId }) {
     }
 
     return (
-        <View className="flex flex-1 gap-2 border rounded-lg w-[400] items-center m-2">
-            <Text className="text-lg font-bold">Kdy si chcete jídlo dát? 👀</Text>
-            <View className="flex flex-row justify-evenly">
-                <TouchableOpacity onPress={showDatePicker}>
+        <View className="flex border rounded-lg w-[90%] items-center justify-center p-2 m-2">
+            <Text className="text-lg font-bold my-1 text-slate-900">Kdy si chcete jídlo dát? 👀</Text>
+            <View className="flex flex-row justify-evenly my-1">
+                <TouchableOpacity onPress={() => setDatePickerVisibility(true)}>
                     <Text className="font-bold text-blue-500 text-lg">{selectedDay !== '' ? selectedDay.toLocaleDateString('cs-CZ') : 'Vyberte datum'}</Text>
                 </TouchableOpacity>
             </View>
@@ -120,19 +74,19 @@ export default function MenuAddDetails({ setShowDetails, userId, recipeId }) {
                     isVisible={isDatePickerVisible}
                     mode="date"
                     onConfirm={handleConfirmDate}
-                    onCancel={hideDatePicker}
+                    onCancel={() => setDatePickerVisibility(false)}
+                    textColor='black'
                 />
             )}
-            <View className="flex flex-row justify-evenly">
-                <TouchableOpacity onPress={handleShowPicker}>
+            <View className="flex flex-row justify-evenly my-1">
+                <TouchableOpacity onPress={() => setShowPicker(true)}>
                     <Text className="font-bold text-blue-500 text-lg"> {selectedType !== '' ? `Typ: ${showTypeName()}` : 'Vyberte typ'}</Text>
                 </TouchableOpacity>
             </View>
             {showPicker && (
                 <>
-
                     <Picker
-                        style={{ width: '70%', height: '20%', flex: 1, marginTop: -80 }}
+                        style={styles.pickerAddMeal}
                         selectedValue={selectedType}
                         onValueChange={(itemValue, itemIndex) =>
                             setSelectedType(itemValue)
@@ -141,38 +95,30 @@ export default function MenuAddDetails({ setShowDetails, userId, recipeId }) {
                             <Picker.Item key={key} label={type.label} value={type.value} />
                         ))}
                     </Picker>
-                    <TouchableOpacity onPress={handleConfirmType}>
-                        <Text className="font-bold text-red-500 text-lg flex">Potvrdit</Text>
-                    </TouchableOpacity>
+                    <IconButton icon="checkmark-sharp" onPress={() => setShowPicker(false)} color="#0D9488" />
                 </>
             )}
-            <View className="flex flex-row justify-evenly">
-                <TouchableOpacity onPress={handleShowNote}>
+            <View className="flex flex-row justify-evenly my-1">
+                <TouchableOpacity onPress={() => setShowNote(true)}>
                     <Text className="font-bold text-blue-500 text-lg"> {note !== '' ? `Poznámka: ${note}` : 'Přidejte poznámku'}</Text>
                 </TouchableOpacity>
             </View>
             {showNote && (
-                <View>
+                <View className="items-center">
                     <TextInput
                         onChangeText={setNote}
                         value={note}
                         placeholder='Např. snídaně'
                     />
-                    <TouchableOpacity onPress={handleConfirmNote}>
-                        <Text className="font-bold text-red-500 text-lg flex">Potvrdit</Text>
-                    </TouchableOpacity>
+                    <IconButton icon="checkmark-sharp" onPress={() => setShowNote(false)} color="#0D9488" />
                 </View>
             )}
-
-            <View className="flex flex-row justify-between">
-                <TouchableOpacity onPress={handleDetailsCancel}>
-                    <Text className="font-bold text-red-500 text-lg mx-10">Zrušit</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={handleDetailsConfirm}>
-                    <Text className="font-bold text-blue-500 text-lg mx-10">Potvrdit</Text>
-                </TouchableOpacity>
-            </View>
-
+            {selectedDay !== '' && selectedType !== '' && (
+                <View className="flex flex-row justify-evenly my-1">
+                    <IconButton icon="close-sharp" onPress={() => handleDetailsCancel()} color="#EF4444" />
+                    <IconButton icon="checkmark-sharp" onPress={() => handleDetailsConfirm()} color="#0D9488" />
+                </View>
+            )}
         </View>
     )
 }

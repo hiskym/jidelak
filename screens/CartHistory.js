@@ -1,4 +1,4 @@
-import { ScrollView, Text, Button, ActivityIndicator } from 'react-native'
+import { ScrollView, Text, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useUserStore } from '../store/UserStore'
 import { fetchAllCarts } from '../utils/CartUtils'
@@ -21,12 +21,12 @@ export default function CartHistory({ navigation }) {
     }, [navigation]);
 
     return (
-        <ScrollView className="mt-5">
+        <ScrollView className="">
             {loading && <ActivityIndicator size="small" color="tomato" className="flex-1 justify-center rounded-sm scale-150" />}
 
             {/* <Button title='carts' onPress={() => { console.log(cartsData) }} /> */}
             {cartsData.length === 0 ? (
-                <Text className="text-center m-2 text-xl">Nemáte uložený žádný nákupní seznam. Přidejte si nějaký!</Text>
+                <Text className="text-center mt-12 text-xl text-slate-900">Nemáte uložený žádný nákupní seznam. Přidejte si nějaký!</Text>
             ): (
                 <CartItems carts={cartsData} navigation={navigation} />
             )}

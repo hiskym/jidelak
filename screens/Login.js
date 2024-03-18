@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, TextInput, Alert } from 'react-native'
+import { View, Text, TouchableOpacity, TextInput, Alert, Keyboard, TouchableWithoutFeedback, ScrollView } from 'react-native'
 import React from 'react'
 import { useState } from 'react';
 import { FIREBASE_AUTH } from '../firebaseConfig';
@@ -21,7 +21,7 @@ export default function Login({ navigation }) {
         try {
             const response = await signInWithEmailAndPassword(auth, email, password);
             await AsyncStorage.setItem('user', JSON.stringify(response));
-            // console.log(response);
+
             navigation.push("Root")
         } catch (error) {
             if (error.message === 'Firebase: Error (auth/invalid-credential).') {
@@ -40,47 +40,60 @@ export default function Login({ navigation }) {
 
 
     return (
-        <View className="flex flex-auto m-5">
+        
+        <ScrollView className="flex flex-auto m-5">
             <Formik
                 initialValues={{ email: email, password: password }}
                 validationSchema={loginSchema}
                 onSubmit={(values, actions) => {
-                    // actions.resetForm();
+                    actions.resetForm();
                     signIn(values.email, values.password)
                 }}
             >
                 {(props) => (
-                    <View className="gap-5 items-center mt-5">
-                        <TextInput
-                            value={props.values.email}
-                            placeholder='muj@email.cz'
-                            autoCapitalize='none'
-                            onChangeText={props.handleChange('email')}
-                            onBlur={props.handleBlur('email')}
-                            className="border border-stone-500 p-2.5 text-lg rounded-lg w-full h-16" />
-                        <Text className="text-red-600">{props.touched.email && props.errors.email}</Text>
-                        <TextInput
-                            secureTextEntry={true}
-                            value={props.values.password}
-                            placeholder='&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;'
-                            autoCapitalize='none'
-                            onChangeText={props.handleChange('password')}
-                            onBlur={props.handleBlur('password')}
-                            className="border border-stone-500 p-2.5 text-lg rounded-lg w-full h-16" />
-                        <Text className="text-red-600 mb-5">{props.touched.password && props.errors.password}</Text>
-                        <TouchableOpacity onPress={props.handleSubmit}>
-                        <Text className="text-xl text-blue-500 font-bold">Přihlásit se</Text>
-                        </TouchableOpacity>
+                                            
+                    <View className="items-center mt-2">
+                            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                                <View className="flex w-full h-16 m-2">
+                                    <TextInput
+                                    value={props.values.email}
+                                    placeholder='muj@email.cz'
+                                    autoCapitalize='none'
+                                    onChangeText={props.handleChange('email')}
+                                    onBlur={props.handleBlur('email')}
+                                    className="border border-stone-500 pl-2.5 h-16 text-lg rounded-lg" />
+                                </View>
+                            </TouchableWithoutFeedback>
+                            <Text className="text-red-600 mb-2">{props.touched.email && props.errors.email}</Text>
+                            <TouchableWithoutFeedback onPress={Keyboard.dismiss }>
+                                <View className="flex w-full h-16 m-2">
+                                    <TextInput
+                                    secureTextEntry={true}
+                                    value={props.values.password}
+                                    placeholder='&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;'
+                                    autoCapitalize='none'
+                                    onChangeText={props.handleChange('password')}
+                                    onBlur={props.handleBlur('password')}
+                                    className="border border-stone-500 pl-2.5 h-16 text-lg rounded-lg " />
+                                </View>
+                            </TouchableWithoutFeedback>
+                            <Text className="text-red-600 mb-5">{props.touched.password && props.errors.password}</Text>
+                            <TouchableOpacity onPress={props.handleSubmit} className="bg-teal-600 rounded-xl py-3 px-5">
+                            <Text className="text-xl text-white font-bold">Přihlásit se</Text>
+                            </TouchableOpacity>
+                        
+                        
                     </View>
                 )}
             </Formik>
-            <View className="items-center my-10">
-                <Text>Ještě nemáte účet?</Text>
+            <View className="border-[0.5px] my-10 border-slate-400" />
+            <View className="items-center">
+                <Text className="text-base m-2 text-slate-900">Ještě nemáte svůj účet?</Text>
                 <TouchableOpacity onPress={() => navigation.navigate("Register")}>
                         <Text className="text-xl text-blue-500 font-bold">Vytvořit účet</Text>
                 </TouchableOpacity>
             </View>
 
-        </View>
+        </ScrollView>
     )
 }

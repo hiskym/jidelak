@@ -1,4 +1,3 @@
-import { View, Text } from 'react-native'
 import React from 'react'
 import LoginNavigation from './LoginNavigation';
 import Root from './Root';
@@ -16,15 +15,15 @@ const {user} = useUserStore();
   return (
     <NavigationContainer>
         <Stack.Navigator>
-            {!user ? <Stack.Screen name="Home" component={Home} options={{title: "Jídelák"}} />
+            {!user ? <Stack.Screen name="Home" component={Home} options={{title: "Jídelák", headerBackTitleVisible: false, headerTitleAlign: 'center'}} />
              : (
                 null
             )}
-            <Stack.Screen name="Root" options={{headerShown: false, title: "Root"}}>
+            <Stack.Screen name="Root" options={{headerShown: false, headerBackTitleVisible: false, title: "Root"}}>
                 {() => <Root />
                 }
             </Stack.Screen>
-            <Stack.Screen name='LoginNavigation' options={{headerShown: false, title: "LoginNavigation"}}>
+            <Stack.Screen name='LoginNavigation' options={{headerShown: false, headerBackTitleVisible: false, title: "LoginNavigation"}}>
                 {() => <LoginNavigation />}
             </Stack.Screen>
             

@@ -1,8 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert } from "react-native";
 import { useCartStore } from "../store/CartStore";
-import { cartsRef } from '../firebaseConfig';
+import { cartsRef, recipeIngredientsRef, ingredientsRef } from '../firebaseConfig';
 import { addDoc, getDocs, query, where, getDoc, doc, deleteDoc } from 'firebase/firestore';
+import { getRecipeIngredients } from "./cacheUtils";
 
 export const loadCart = async (setCart) => {
     try {
@@ -87,7 +88,7 @@ export const saveCart = async (userId, title, plannedBuy, date) => {
             Alert.alert('Chyba!', 'Musíte zvolit název', [
                 { text: 'OK' }
             ])
-        }else if (plannedBuy === '') {
+        } else if (plannedBuy === '') {
             Alert.alert('Chyba!', 'Musíte vybrat den nákupu', [
                 { text: 'OK' }
             ])
@@ -116,10 +117,11 @@ export const fetchAllCarts = async (userId, setCartsData, setLoading) => {
             const cartsData = cartsSnapshot.docs.map(doc => ({
                 id: doc.id,
                 data: {
-                    title: doc.data(). title,
+                    title: doc.data().title,
                     plannedBuy: doc.data().plannedBuy
                 }
             }));
+            console.log(cartsData)
             setCartsData(cartsData);
         } else {
             console.log('no carts found')
@@ -137,7 +139,8 @@ export const fetchCartData = async (cartId, setCartData, setCheckedSteps) => {
         const cartSnapshot = await getDoc(cartDoc);
 
         if (cartSnapshot.exists()) {
-            const cartData = cartSnapshot.data();
+            const {content, date, plannedBuy } = cartSnapshot.data();
+            const cartData = {content, date, plannedBuy}
             setCartData(cartData);
             setCheckedSteps(new Array(cartData.content.length).fill(false))
         } else {
@@ -157,4 +160,65 @@ export const removeFromCarts = async (cartId) => {
     } catch (error) {
         console.error(error)
     }
+}
+
+export const addToCartFullWeek = async (addToCartRecipe, meals, setLoading) => {
+    setLoading(true)
+    try {
+        if (meals.length === 0) {
+            Alert.alert('Chyba!', 'Nelze vytvořit nákupní seznam. Doplňte nějaké potraviny.', [
+                { text: 'OK' }
+            ])
+            setLoading(false);
+            return;
+        }
+        
+        const recipeIds = meals.map(meal => meal.recipeId);
+
+        const ingredientsData = [];
+
+        for (const recipeId of recipeIds) {
+            const cachedIngredients = await getRecipeIngredients(recipeId)
+
+            if (cachedIngredients) {
+                console.log(cachedIngredients)
+                for (const ingredient of cachedIngredients) {
+                    ingredientsData.push(ingredient);
+                }
+            } else {
+                const recipeIngredientsQuery = query(recipeIngredientsRef, where('recipeId', '==', recipeId));
+                const recipeIngredientsSnapshot = await getDocs(recipeIngredientsQuery);
+
+                for (const docRef of recipeIngredientsSnapshot.docs) {
+                    const { ingredientId, amount } = docRef.data();
+        
+                    const ingredientDoc = await getDoc(doc(ingredientsRef, ingredientId));
+        
+                    if (ingredientDoc.exists()) {
+                        const { title, unit } = ingredientDoc.data();
+        
+                        const ingredientData = { title, unit, amount };
+        
+                        ingredientsData.push(ingredientData);
+        
+                    } else {
+                        console.error(`${ingredientId} not found.`);
+                    }
+                }
+            }
+        }
+        console.log(ingredientsData);
+        if (ingredientsData.length !== 0) {
+            addToCartRecipe(ingredientsData);
+            const updatedCart = useCartStore.getState().cart;
+            await AsyncStorage.setItem('shoppingList', JSON.stringify(updatedCart));
+
+            Alert.alert('Úspěch!', 'Úspešně přidáno.', [
+                { text: 'OK' }
+            ])
+        }
+    } catch (error) {
+        console.error(error)
+    }
+    setLoading(false)
 }

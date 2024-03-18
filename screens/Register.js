@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Button, TextInput, Alert } from 'react-native'
+import { View, Text, TouchableOpacity, TextInput, Alert, Keyboard, TouchableWithoutFeedback, ScrollView, Modal } from 'react-native'
 import React from 'react'
 import { useState } from 'react';
 import { FIREBASE_AUTH, usersRef } from '../firebaseConfig';
@@ -7,6 +7,8 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import { doc, setDoc } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import IconButton from '../components/IconButton';
+import About from './About';
 
 const loginSchema = yup.object({
   email: yup.string().email('Špatně zadaný email').required('Pro registraci je nutné zadat email.'),
@@ -14,94 +16,137 @@ const loginSchema = yup.object({
   username: yup.string().required('Zadejte své jméno').min(3)
 })
 
-export default function Register({navigation}) {
+export default function Register({ navigation }) {
+
+  const [modalOpen, setModalOpen] = useState(false);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
   const auth = FIREBASE_AUTH;
 
-    const signUp = async (email, username, password) => {
-        try {
-            const response = await createUserWithEmailAndPassword(auth, email, password);
-            console.log(response);
+  const signUp = async (email, username, password) => {
+    try {
+      const response = await createUserWithEmailAndPassword(auth, email, password);
+      console.log(response);
 
-            const userDoc = doc(usersRef, response.user.uid)
+      const userDoc = doc(usersRef, response.user.uid)
 
-            await setDoc(userDoc, { name: username })
+      await setDoc(userDoc, { name: username })
 
-            await AsyncStorage.setItem('user', JSON.stringify(response));
+      await AsyncStorage.setItem('user', JSON.stringify(response));
 
-            Alert.alert('Registrace úspěsná!', 'Na email byl odeslán potvrzovací odkaz.', [
-              {
-                text:'OK'
-              }
-            ])
-            navigation.push("Survey")
-        } catch (error) {
-
-          if (error.message === "Firebase: Error (auth/email-already-in-use).") {
-            error.message = "Email je již využíván. "
-          }
-            console.log(error.message);
-            Alert.alert('Registrace nezdařila!', error.message, [
-              {
-                text:'OK'
-              }
-            ])
+      Alert.alert('Registrace úspěsná!', 'Na email byl odeslán potvrzovací odkaz.', [
+        {
+          text: 'OK'
         }
-    }
-    
-  return (
-    <View className="flex flex-auto m-5">
-            <Formik
-                initialValues={{ email: email, username: username, password: password }}
-                validationSchema={loginSchema}
-                onSubmit={(values, actions) => {
-                    // actions.resetForm();
-                    signUp(values.email, values.username, values.password)
-                }}
-            >
-                {(props) => (
-                    <View className="gap-5 items-center mt-5">
-                        <TextInput
-                            value={props.values.email}
-                            placeholder='muj@email.cz'
-                            autoCapitalize='none'
-                            onChangeText={props.handleChange('email')}
-                            onBlur={props.handleBlur('email')}
-                            className="border border-stone-300 p-2.5 text-lg rounded-lg w-full h-16" />
-                        <Text className="text-red-600">{props.touched.email && props.errors.email}</Text>
-                        <TextInput
-                            value={props.values.username}
-                            placeholder='Jan Novák'
-                            autoCapitalize='none'
-                            onChangeText={props.handleChange('username')}
-                            onBlur={props.handleBlur('username')}
-                            className="border border-stone-300 p-2.5 text-lg rounded-lg w-full h-16" />
-                        <Text className="text-red-600">{props.touched.username && props.errors.username}</Text>
-                        <TextInput
-                            secureTextEntry={true}
-                            value={props.values.password}
-                            placeholder='&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;'
-                            autoCapitalize='none'
-                            onChangeText={props.handleChange('password')}
-                            onBlur={props.handleBlur('password')}
-                            className="border border-stone-300 p-2.5 text-lg rounded-lg w-full h-16" />
-                        <Text className="text-red-600 mb-5">{props.touched.password && props.errors.password}</Text>
-                        <TouchableOpacity onPress={props.handleSubmit}>
-                        <Text className="text-xl text-blue-500 font-bold">Zaregistrovat se</Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
-            </Formik>
-            <View className="items-center my-10">
-                <Text>Již máte účet?</Text>
-                <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-                        <Text className="text-xl text-blue-500 font-bold">Přihlášení</Text>
-                </TouchableOpacity>
-            </View>
+      ])
+      navigation.push("Survey")
+    } catch (error) {
 
-        </View>
+      if (error.message === "Firebase: Error (auth/email-already-in-use).") {
+        error.message = "Email je již využíván. "
+      }
+      console.log(error.message);
+      Alert.alert('Registrace nezdařila!', error.message, [
+        {
+          text: 'OK'
+        }
+      ])
+    }
+  }
+
+  const handleRegistration = (email, username, password) => {
+    Alert.alert('Registrovat se', 'Registrací souhlasíte s podmínkami používání aplikace. Můžete si je kdykoliv znovu přečíst v aplikaci v sekci Více.', [
+      {
+        text: 'Zrušit'
+      },
+      {
+        text: 'Souhlasím',
+        onPress: () => signUp(email, username, password)
+      }
+    ])
+  }
+
+  return (
+    <ScrollView className="flex flex-auto m-5">
+      <Modal visible={modalOpen} animationType="slide" className="bg-slate-100">
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View className="flex-col flex-1 justify-between m-5 mt-20 items-center">
+            <IconButton
+              icon='close'
+              onPress={() => setModalOpen(false)}
+            />
+            <About />
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+
+      <Formik
+        initialValues={{ email: email, username: username, password: password }}
+        validationSchema={loginSchema}
+        onSubmit={(values, actions) => {
+          actions.resetForm();
+          handleRegistration(values.email, values.username, values.password)
+        }}
+      >
+        {(props) => (
+          <View className="items-center mt-2">
+            <Text className="text-base mb-2">Zde se můžete bezplatně zaregistrovat 😊 </Text>
+            <View className="items-center my-5">
+              <IconButton icon='information-circle' onPress={() => setModalOpen(true)} />
+            </View>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+              <View className="flex w-full h-16 m-2">
+                <TextInput
+                  value={props.values.email}
+                  placeholder='muj@email.cz'
+                  autoCapitalize='none'
+                  onChangeText={props.handleChange('email')}
+                  onBlur={props.handleBlur('email')}
+                  className="border border-stone-500 p-2.5 text-lg rounded-lg" />
+              </View>
+            </TouchableWithoutFeedback>
+            <Text className="text-red-600">{props.touched.email && props.errors.email}</Text>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+              <View className="flex w-full h-16 m-2">
+                <TextInput
+                  value={props.values.username}
+                  placeholder='Jan Novák'
+                  autoCapitalize='none'
+                  onChangeText={props.handleChange('username')}
+                  onBlur={props.handleBlur('username')}
+                  className="border border-stone-500 p-2.5 text-lg rounded-lg" />
+              </View>
+            </TouchableWithoutFeedback>
+            <Text className="text-red-600">{props.touched.username && props.errors.username}</Text>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+              <View className="flex w-full h-16 m-2">
+                <TextInput
+                  secureTextEntry={true}
+                  value={props.values.password}
+                  placeholder='&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;'
+                  autoCapitalize='none'
+                  onChangeText={props.handleChange('password')}
+                  onBlur={props.handleBlur('password')}
+                  className="border border-stone-500 p-2.5 text-lg rounded-lg" />
+              </View>
+            </TouchableWithoutFeedback>
+            <Text className="text-red-600 mb-5">{props.touched.password && props.errors.password}</Text>
+            <TouchableOpacity onPress={props.handleSubmit} className="bg-teal-600 rounded-xl py-3 px-5">
+              <Text className="text-xl text-white font-bold">Zaregistrovat se</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </Formik>
+      <View className="border-[0.5px] my-10 border-slate-400" />
+      <View className="items-center">
+        <Text className="text-base m-2 text-slate-900">Již máte účet?</Text>
+        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+          <Text className="text-xl text-blue-500 font-bold">Přihlášení</Text>
+        </TouchableOpacity>
+      </View>
+
+    </ScrollView>
   )
 }

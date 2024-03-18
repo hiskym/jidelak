@@ -1,8 +1,10 @@
 import { View, Text, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import FoodCard from './FoodCard'
+import FoodCard from './FoodCard';
+import { formatDate } from '../utils/DateUtils';
+import { sumUpNutrition } from '../utils/menuUtils';
 
-export default function Day({ meals, navigation, day, formatDate, userMacros }) {
+export default function Day({ meals, navigation, day, userMacros }) {
 
   const [calories, setCalories] = useState(0);
 
@@ -16,58 +18,52 @@ export default function Day({ meals, navigation, day, formatDate, userMacros }) 
 
   const dayMeals = meals.filter((meal) => formatDate(meal.day) === `${day.month}/${day.date}/${day.year}`);
 
-  const sumUpNutrition = () => {
-    let totalCalories = 0;
-    let totalFats = 0;
-    let totalCarbs = 0;
-    let totalFiber = 0;
-    let totalProteins = 0;
-
-    dayMeals.forEach((meal) => {
-      totalCalories += meal.recipe.nutrition.calories;
-      totalFats += meal.recipe.nutrition.fats;
-      totalCarbs += meal.recipe.nutrition.carbs;
-      totalFiber += meal.recipe.nutrition.fiber;
-      totalProteins += meal.recipe.nutrition.proteins;
-    });
-
-    setCalories(totalCalories);
-    setFats(totalFats);
-    setCarbs(totalCarbs);
-    setFiber(totalFiber);
-    setProteins(totalProteins);
-  }
-
   useEffect(() => {
-    sumUpNutrition()
+    sumUpNutrition(dayMeals, setCalories, setFats, setCarbs, setFiber, setProteins)
   }, [meals])
 
   return (
     <View className="flex flex-row flex-wrap p-2 justify-center">
-      <View className="flex flex-row justify-evenly w-full">
-        
-        <Text className="my-2 text-xs">Kalorie: </Text>
-        <Text className={`my-2 text-xs ${calories < userMacros.calories  ? 'text-green-500' : 'text-red-500'}`}>{calories} </Text>
-        <Text className="my-2 text-xs">Sacharidy: </Text>
-        <Text className={`my-2 text-xs ${carbs < userMacros.carbs  ? 'text-green-500' : 'text-red-500'}`}>{carbs}g </Text>
-        <Text className="my-2 text-xs">Bílkoviny: </Text>
-        <Text className={`my-2 text-xs ${proteins < userMacros.proteins  ? 'text-green-500' : 'text-red-500'}`}>{proteins}g </Text>
-        <Text className="my-2 text-xs">Tuky: </Text>
-        <Text className={`my-2 text-xs ${fats < userMacros.fats  ? 'text-green-500' : 'text-red-500'}`}>{fats}g </Text>
-        <Text className="my-2 text-xs">Vláknina: </Text>
-        <Text className={`my-2 text-xs ${fiber > userMacros.fiber  ? 'text-green-500' : 'text-red-500'}`}>{fiber}g</Text>
+      <View className="flex flex-row flex-wrap [w-90%] items-center justify-center">
+        <View className="flex flex-row">
+        <Text className="my-2 text-xs text-slate-900">Kalorie: </Text>
+        <Text className={`my-2 text-xs text-slate-900 ${calories < userMacros.calories - 300 || calories > userMacros.calories + 300  ? 'text-red-500' : 'text-teal-600'}`}>{calories} </Text>
+
+        </View>
+        <View className="flex flex-row">
+        <Text className="my-2 text-xs text-slate-900">Sacharidy: </Text>
+        <Text className={`my-2 text-xs text-slate-900 ${carbs < 0.9* userMacros.carbs || carbs > 1.1* userMacros.carbs  ? 'text-red-500' : 'text-teal-600'}`}>{carbs}g </Text>
+        </View>
+        <View className="flex flex-row">
+        <Text className="my-2 text-xs text-slate-900">Bílkoviny: </Text>
+        <Text className={`my-2 text-xs text-slate-900 ${proteins < 0.9* userMacros.proteins || proteins > 1.1* userMacros.proteins  ? 'text-red-500' : 'text-teal-600'}`}>{proteins}g </Text>
+        </View>
+        <View className="flex flex-row">
+        <Text className="my-2 text-xs text-slate-900">Tuky: </Text>
+        <Text className={`my-2 text-xs text-slate-900 ${fats < 0.9* userMacros.fats || fats > 1.1* userMacros.fats  ? 'text-red-500' : 'text-teal-600'}`}>{fats}g </Text>
+        </View>
+        <View className="flex flex-row">
+        <Text className="my-2 text-xs text-slate-900">Vláknina: </Text>
+        <Text className={`my-2 text-xs text-slate-900 ${fiber < 0.9* userMacros.fiber ? 'text-red-500' : 'text-teal-600'}`}>{fiber}g</Text>
+        </View>
+
+
+
       </View>
-      
+      <View className="flex flex-wrap flex-row justify-center">
       {dayMeals.map((meal, mealIndex) => (
           <View key={mealIndex} className="flex flex-row">
-            <TouchableOpacity onPress={() => {}}>
+            <TouchableOpacity onPress={() => navigation.navigate('MealDetail', meal)}>
               <FoodCard
                 image={meal.recipe.image}
+                size={80}
+                width='20'
+                height='20'
               />
             </TouchableOpacity>
           </View>
         ))}
-
+    </View>
     </View>
   )
 }

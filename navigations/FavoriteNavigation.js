@@ -1,6 +1,5 @@
-import { View, Text } from 'react-native'
 import React from 'react'
-import { createNativeStackNavigator} from '@react-navigation/native-stack'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import Favorites from '../screens/Favorites';
 import Favorite from '../screens/Favorite';
 import FavoritesLocked from '../screens/FavoritesLocked';
@@ -11,25 +10,23 @@ const Stack = createNativeStackNavigator()
 
 export default function FavoriteNavigation() {
 
-    const backTitle = "Zpět";
-
-    const {user} = useUserStore();
+  const { user } = useUserStore();
 
   return (
     <Stack.Navigator>
-        {!user ? (<Stack.Screen name="FavoriteLocked" options={{ title: "Oblíbené" }}>
-                {(props) => <FavoritesLocked {...props}  />}
-            </Stack.Screen>) :(
-              <Stack.Screen name="Favorites" options={{title: "Oblíbené"}}>
-              {(props) => <Favorites {...props} />}
-            </Stack.Screen>
-            )}
-        <Stack.Screen name="FavoriteDetail" options={{title: "Detail receptu", headerBackTitle: backTitle}}>
-          {(props) => <Favorite {...props} />}
+      {!user ? (<Stack.Screen name="FavoriteLocked" options={{ title: "Oblíbené", headerTitleAlign: 'center' }}>
+        {(props) => <FavoritesLocked {...props} />}
+      </Stack.Screen>) : (
+        <Stack.Screen name="Favorites" options={{ title: "Oblíbené", headerBackTitleVisible: false, headerTitleAlign: 'center' }}>
+          {(props) => <Favorites {...props} />}
         </Stack.Screen>
-        <Stack.Screen name="LoginNavigation" options={{ title: "Přihlášení"}}>
-            {(props) => <LoginNavigation {...props} />}
-        </Stack.Screen>
+      )}
+      <Stack.Screen name="FavoriteDetail" options={{ title: "Detail receptu", headerBackTitleVisible: false, headerTitleAlign: 'center' }}>
+        {(props) => <Favorite {...props} />}
+      </Stack.Screen>
+      <Stack.Screen name="LoginNavigation" options={{ title: "Přihlášení", headerShown: false }}>
+        {(props) => <LoginNavigation {...props} />}
+      </Stack.Screen>
     </Stack.Navigator>
   )
 }

@@ -13,7 +13,7 @@ export const removeFromFavorites = async (recipeId, userId) => {
         }
 
     } catch (error) {
-        console.error('Error removing from favorites:', error);
+        console.error(error);
     }
 };
 
@@ -40,6 +40,6 @@ export const addToFavorites = async (recipeId, userId) => {
         }
 
     } catch (error) {
-        console.error('Error adding to favorites:', error);
+        console.error(error);
     }
 }

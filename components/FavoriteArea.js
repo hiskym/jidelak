@@ -1,18 +1,16 @@
-import { View, TouchableOpacity, Button } from 'react-native'
+import { View, TouchableOpacity} from 'react-native'
 import React from 'react'
-import FavoriteCard from './RecipeCard'
+import RecipeCard from './RecipeCard'
 
 export default function FavoriteArea({ favorites, navigation }) {
     return (
-        <View className="flex flex-row flex-wrap p-4 justify-between">
+        <View className="flex flex-row flex-wrap justify-evenly mt-4">
             {favorites.map((favorite) => {
                 return (
                     <TouchableOpacity key={favorite.recipeId} onPress={() => { navigation.navigate('FavoriteDetail', favorite) }}>
-                        <FavoriteCard
-                            id={favorite.recipeId}
+                        <RecipeCard
                             image={favorite.data.image}
                             name={favorite.data.name}
-                            description={favorite.data.description}
                         />
                     </TouchableOpacity>
                 )

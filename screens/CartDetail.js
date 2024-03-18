@@ -1,4 +1,4 @@
-import { View, Text, Button, FlatList, Alert } from 'react-native'
+import { View, Text, FlatList, Alert, ScrollView } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import Checkbox from 'expo-checkbox';
 import IconButton from '../components/IconButton';
@@ -33,10 +33,10 @@ export default function CartDetail({route, navigation}) {
     }
 
     return (
-        <View className="p-3">
-            <Text className="text-3xl text-center font-semibold my-2">{cartData.title}</Text>
-            <Text className="text-xl text-center font-semibold mb-2">{`Datum nákupu: ${formatDateCZ(cartData.plannedBuy)}`}</Text>
-            <Text className="text-base text-center mb-2">{`Datum vytvoření: ${formatDateCZ(cartData.date)}`}</Text>
+        <ScrollView className="flex flex-col p-3" nestedScrollEnabled={true}>
+            <Text className="text-3xl text-center font-semibold my-2 text-slate-900">{cartData.title}</Text>
+            <Text className="text-xl text-center font-semibold mb-2 text-slate-900">{`Datum nákupu: ${formatDateCZ(cartData.plannedBuy)}`}</Text>
+            <Text className="text-base text-center mb-2 text-slate-900">{`Datum vytvoření: ${formatDateCZ(cartData.date)}`}</Text>
             <View className="flex-row justify-center my-5">
                 <IconButton icon={"trash"} onPress={() => handleRemoveCart()} />
             </View>
@@ -47,11 +47,13 @@ export default function CartDetail({route, navigation}) {
                     renderItem={({ item, index }) => (
                         <View className="flex flex-row items-center w-96 m-1">
                             <Checkbox value={checkedSteps[index]} onValueChange={() => handleCheckboxChange(index, checkedSteps, setCheckedSteps)} className="m-2" />
-                            <Text className="flex flex-shrink">{item.amount} {item.unit} {item.title}</Text>
+                            <Text className="flex flex-shrink text-slate-900">{item.amount} {item.unit} {item.title}</Text>
                         </View>
                     )}
                     className="h-full"
+                    scrollEnabled={false}
                 />
-        </View>
+            <View className="h-5"></View>
+        </ScrollView>
     )
 }

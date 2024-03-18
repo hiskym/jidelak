@@ -1,4 +1,3 @@
-import { View, Text } from 'react-native'
 import React from 'react'
 import Settings from "../screens/Settings";
 import About from "../screens/About";
@@ -12,18 +11,15 @@ const Stack = createNativeStackNavigator()
 
 export default function MoreNavigation() {
 
-    const backTitle = "Zpět";
-
   return (
     <Stack.Navigator>
-        <Stack.Screen name="More" options={{title: "Více"}}>
+        <Stack.Screen name="More" options={{title: "Více", headerBackTitleVisible: false, headerTitleAlign: 'center'}}>
           {(props) => <More {...props} />}
         </Stack.Screen>
-        <Stack.Screen name="Settings" component={Settings} options={{title: "Nastavení", headerBackTitle: backTitle}} />
-        {/* testing place for survey */}
-        <Stack.Screen name="Survey" component={Survey} options={{title: "Vaše údaje", headerBackVisible: false, gestureEnabled: false}} />
-        <Stack.Screen name="About" component={About} options={{title: "O aplikaci", headerBackTitle: backTitle}} />
-        <Stack.Screen name="LoginNavigation" options={{title: "Přihlášení", headerBackTitle: backTitle}}>
+        <Stack.Screen name="Settings" component={Settings} options={{title: "Nastavení", headerBackTitleVisible: false, headerTitleAlign: 'center'}} />
+        <Stack.Screen name="Survey" component={Survey} options={{title: "Vaše údaje", headerBackTitleVisible: false, gestureEnabled: false, headerTitleAlign: 'center'}} />
+        <Stack.Screen name="About" component={About} options={{title: "O aplikaci", headerBackTitleVisible: false, headerTitleAlign: 'center'}} />
+        <Stack.Screen name="LoginNavigation" options={{title: "Přihlášení", headerBackTitleVisible: false, gestureEnabled: false, headerShown: false}}>
           {(props) => <LoginNavigation {...props} />}
         </Stack.Screen>
         <Stack.Screen name="Home" component={Home} options={{title: "Jídelák"}} />

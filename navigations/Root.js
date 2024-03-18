@@ -1,5 +1,4 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import ShoppingList from "../screens/ShoppingList";
 import Ionicons from '@expo/vector-icons/Ionicons'
 import MoreNavigation from "./MoreNavigation";
 import RecipeNavigation from "./RecipeNavigation";
@@ -9,8 +8,6 @@ import CartNavigation from "./CartNavigation";
 
 
 const Tab = createBottomTabNavigator();
-
-
 
 export default function Root() {
     return (
@@ -38,6 +35,7 @@ export default function Root() {
                 tabBarActiveTintColor: 'tomato',
                 tabBarInactiveTintColor: 'gray',
             })}
+            
         >
             {/* <Tab.Screen name="Home" component={Home} /> */}
 
@@ -53,7 +51,7 @@ export default function Root() {
                 {() => <FavoriteNavigation />}
             </Tab.Screen>
 
-            <Tab.Screen name="CartNavigation" options={{ headerShown: false, title: "Nákupní seznam" }}>
+            <Tab.Screen name="CartNavigation" options={{ headerShown: false, title: "Košík" }}>
                 {() => <CartNavigation />}
             </Tab.Screen>
             <Tab.Screen name="More Navigation" options={{ headerShown: false, title: "Více" }}>

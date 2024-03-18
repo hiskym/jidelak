@@ -1,9 +1,10 @@
-import { ScrollView, Text, View, ActivityIndicator, Button, Alert } from 'react-native'
+import { ScrollView, Text, ActivityIndicator, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import FavoriteArea from '../components/FavoriteArea';
 import { usersRef, recipesRef, favoritesRef } from '../firebaseConfig';
 import { doc, getDoc, onSnapshot, deleteField, updateDoc, query, where } from 'firebase/firestore';
 import { useUserStore } from '../store/UserStore';
+import { getRecipeData } from '../utils/cacheUtils';
 
 export default function Favorites({ navigation }) {
 
@@ -27,15 +28,21 @@ export default function Favorites({ navigation }) {
         const favoritesData = [];
 
         for (const docSnapshot of querySnapshot.docs) {
+          const recipeId = docSnapshot.data().recipeId;
 
-          const favoriteData = docSnapshot.data();
-          const recipeId = favoriteData.recipeId;
-          const recipeDocRef = doc(recipesRef, recipeId);
-          const recipeDocSnapshot = await getDoc(recipeDocRef);
+          const cachedRecipe = await getRecipeData(recipeId);
 
-          if (recipeDocSnapshot.exists()) {
-            const { name, image, description } = recipeDocSnapshot.data();
-            favoritesData.push({ ...favoriteData, data: {name, image, description} });
+          if (cachedRecipe) {
+            const { image, name } = cachedRecipe;
+            favoritesData.push({ recipeId, data: { name, image } });
+          } else {
+            const recipeDocRef = doc(recipesRef, recipeId);
+            const recipeDocSnapshot = await getDoc(recipeDocRef);
+
+            if (recipeDocSnapshot.exists()) {
+              const { name, image } = recipeDocSnapshot.data();
+              favoritesData.push({ recipeId, data: { name, image } });
+            }
           }
         }
 
@@ -79,14 +86,9 @@ export default function Favorites({ navigation }) {
 
   return (
     <ScrollView className="flex-1">
-      {loading && <ActivityIndicator size="small" color="tomato" className="flex-1 justify-center rounded-sm scale-150" />}
+      {loading && <ActivityIndicator size="small" color="tomato" className="flex-1 justify-center rounded-sm scale-150 mt-5" />}
       {err && <Text>Chyba při načítání. Zkuste to prosím později.</Text>}
       <FavoriteArea favorites={favorites} navigation={navigation} />
-      
-      {/* testovaci tlacitka */}
-      <Button title="clear" onPress={() => clearFavorites()} />
-      <Button title="console favorites" onPress={() => console.log(favorites.map((favorite) => favorite.data))} />
-
     </ScrollView>
   )
 }

@@ -1,23 +1,27 @@
-import { View, Text, Button, Alert } from 'react-native'
+import { View, Text, Button, Alert, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { FIREBASE_AUTH } from '../firebaseConfig'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useUserStore } from '../store/UserStore'
 import { usersRef } from '../firebaseConfig'
 import { doc, getDoc } from 'firebase/firestore'
+import { useCartStore } from '../store/CartStore'
+import { clearCache } from '../utils/cacheUtils'
 
 //screen for settings and about
-export default function More({navigation}) {
+export default function More({ navigation }) {
 
-  const {user} = useUserStore();
+  const { user } = useUserStore();
 
-  const [username, setUsername] = useState(''); 
+  const { setCart } = useCartStore();
+
+  const [username, setUsername] = useState('');
 
   useEffect(() => {
-    if (user && user.uid) {
+    if (user && user.uid) {
       getUsername();
     }
-    
+
   }, [user])
 
   const getUsername = async () => {
@@ -25,12 +29,12 @@ export default function More({navigation}) {
       const userDoc = doc(usersRef, user.uid);
       const userDocSnapshot = await getDoc(userDoc);
       if (userDocSnapshot.exists()) {
-        const userData = userDocSnapshot.data();
+        const username = userDocSnapshot.data().name;
 
-        const newUsername = userData.name || '';
+        const newUsername = username || '';
 
-        setUsername(newUsername);  
-      } 
+        setUsername(newUsername);
+      }
     } catch (error) {
       console.log(error)
     }
@@ -46,43 +50,53 @@ export default function More({navigation}) {
         {
           text: 'OK',
           onPress: async () => {
-            await AsyncStorage.removeItem('user');
+            await clearCache();
             FIREBASE_AUTH.signOut()
-            // navigation.push("More")
-            // setUser(null);
-            // setFavorites([]);
+            await AsyncStorage.removeItem('user');
+            setCart([])
           }
         },
       ])
     } catch (error) {
       console.error('error:', error);
     }
-    
-    
+
+
   }
 
   return (
-    <View className="flex-1 top-10">
+    <View className="flex-1 items-center bg-white">
       {user && (
-        <>
-        <Text className="text-center m-2 font-bold text-2xl">{username}</Text>
-        <Text className="text-center m-2">{user.email}</Text>
-        </>
-        )  }
-      
-      <Button title='O aplikaci' onPress={() => navigation.navigate("About")} />
+        <View className="bg-teal-50 w-full mb-5 py-4 rounded-b-2xl shadow-sm">
+          <Text className="text-center m-2 font-bold text-2xl text-slate-900">{username}</Text>
+          <Text className="text-center m-2 text-slate-900">{user.email}</Text>
+        </View>
+      )}
+      <TouchableOpacity onPress={() => navigation.navigate("About")}>
+        <Text className="text-xl text-blue-500 font-semibold pt-2">O aplikaci</Text>
+      </TouchableOpacity>
+      <View className="border-[0.5px] border-slate-300 w-[60%] m-3" />
 
-      {/* adjust podle toho, zda je uzivatel prihlaseny */}
       {!user ? (
-        <Button title='Přihlášení' onPress={() => navigation.navigate("LoginNavigation")} />
+        <TouchableOpacity onPress={() => navigation.navigate("LoginNavigation")}>
+          <Text className="text-xl text-blue-500 font-semibold">Přihlášení</Text>
+        </TouchableOpacity>
       ) : (
         <>
-        <Button title='Nastavení' onPress={() => navigation.navigate("Settings")}/>
-        <Button title='Dotazník' onPress={() => navigation.navigate("Survey")} />
-        <Button title='Odhlásit se' onPress={() => handleLogout()} />
+          <TouchableOpacity onPress={() => navigation.navigate("Settings")}>
+            <Text className="text-xl text-blue-500 font-semibold">Nastavení</Text>
+          </TouchableOpacity>
+          <View className="border-[0.5px] border-slate-300 w-[60%] m-3" />
+          <TouchableOpacity onPress={() => navigation.navigate("Survey")}>
+            <Text className="text-xl text-blue-500 font-semibold">Dotazník</Text>
+          </TouchableOpacity>
+          <View className="border-[0.5px] border-slate-300 w-[60%] m-3" />
+          <TouchableOpacity onPress={() => handleLogout()}>
+            <Text className="text-xl text-blue-500 font-semibold">Odhlásit se</Text>
+          </TouchableOpacity>
         </>
       )}
-      
+
     </View>
   )
 }

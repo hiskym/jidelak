@@ -1,4 +1,3 @@
-import { View, Text } from 'react-native'
 import React from 'react'
 import ShoppingList from '../screens/ShoppingList';
 import CartHistory from '../screens/CartHistory';
@@ -9,13 +8,11 @@ const Stack = createNativeStackNavigator()
 
 export default function CartNavigation() {
 
-    const backTitle = "Zpět";
-
   return (
     <Stack.Navigator>
-        <Stack.Screen name="ShoppingList" component={ShoppingList} options={{title: "Nákupní seznam"}} />
-        <Stack.Screen name="CartHistory" component={CartHistory} options={{title: "Uložené nákupní seznamy", headerBackTitle: backTitle}} />
-        <Stack.Screen name="CartDetail" options={{title: "Detail seznamu", headerBackTitle: backTitle}}>
+        <Stack.Screen name="ShoppingList" component={ShoppingList} options={{title: "Nákupní seznam", headerBackTitleVisible: false, headerTitleAlign: 'center'}} />
+        <Stack.Screen name="CartHistory" component={CartHistory} options={{title: "Uložené nákupní seznamy", headerBackTitleVisible: false, headerTitleAlign: 'center'}} />
+        <Stack.Screen name="CartDetail" options={{title: "Detail seznamu", headerBackTitleVisible: false, headerTitleAlign: 'center'}}>
         {(props) => <CartDetail {...props} />
             }
         </Stack.Screen>

@@ -1,11 +1,9 @@
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native'
 import React, { useState } from 'react'
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { useCartStore } from '../store/CartStore';
 import { useUserStore } from '../store/UserStore';
-import { cartsRef } from '../firebaseConfig';
-import { addDoc } from 'firebase/firestore';
 import { saveCart } from '../utils/CartUtils';
+import IconButton from './IconButton';
 
 export default function SaveCart({ setShowDetails }) {
 
@@ -35,16 +33,16 @@ export default function SaveCart({ setShowDetails }) {
     const currentDate = new Date();
 
     return (
-        <View className="flex flex-col gap-2 border rounded-lg w-[400] items-center m-2 bg-slate-100 h-48">
-            <Text className="text-lg font-bold">Uložte si nákupní seznam</Text>
+        <View className="flex border rounded-lg w-[90%] items-center justify-center p-2 mt-4 h-[200px] bg-white shadow-md">
+            <Text className="text-lg font-bold my-1 text-slate-900">Uložte si nákupní seznam</Text>
             <TextInput
                 onChangeText={setTitle}
                 value={title}
                 placeholder='Název'
                 autoCapitalize='none'
-                className="border border-stone-500 p-2.5 text-lg rounded-lg w-[90%] h-[25%]"
+                className="border border-stone-500 rounded-lg w-[90%] h-[25%] my-1 pl-3"
             />
-            <View className="flex flex-row justify-evenly">
+            <View className="flex flex-row justify-evenly my-1">
                 <TouchableOpacity onPress={() => setDatePickerVisibility(true)}>
                     <Text className="font-bold text-blue-500 text-lg">{selectedDay !== '' ? (`Datum nákupu: ${selectedDay.toLocaleDateString('cs-CZ')}`) : 'Vyberte datum plánovaného nákupu'}</Text>
                 </TouchableOpacity>
@@ -57,13 +55,9 @@ export default function SaveCart({ setShowDetails }) {
                     onCancel={() => setDatePickerVisibility(false)}
                 />
             )}
-            <View className="flex flex-row justify-between">
-                <TouchableOpacity onPress={handleDetailsCancel}>
-                    <Text className="font-bold text-red-500 text-lg mx-10">Zrušit</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={handleDetailsConfirm}>
-                    <Text className="font-bold text-blue-500 text-lg mx-10">Potvrdit</Text>
-                </TouchableOpacity>
+            <View className="flex flex-row justify-between my-1">
+                <IconButton icon="close-sharp" onPress={() => handleDetailsCancel()} color="#EF4444" />
+                <IconButton icon="checkmark-sharp" onPress={() => handleDetailsConfirm()} color="#0D9488" />
             </View>
         </View>
     )

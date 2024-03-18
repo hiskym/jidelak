@@ -3,6 +3,9 @@ import React from 'react'
 import { Formik } from 'formik';
 import * as yup from 'yup'
 import IconButton from '../components/IconButton';
+import { unitValues } from '../utils/PickerValues';
+import { Picker } from '@react-native-picker/picker';
+import { styles } from '../styles/GlobalStyles';
 
 const itemSchema = yup.object({
     amount: yup.number().required('Je nutné zadat množství').min(1).typeError('Množství musí být číslo'),
@@ -22,32 +25,38 @@ export default function ShoppingListForm({addToCart}) {
                 }}
             >
                 {(props) => (
-                    <View className="gap-5 items-center mt-5">
-                        <Text className="text-lg">Přidání položky do nákupního seznamu</Text>
+                    <View className="items-center mt-5">
+                        <Text className="text-lg mb-2 text-slate-900">Přidání položky do nákupního seznamu</Text>
                         <TextInput
                             placeholder='Název položky'
                             onChangeText={props.handleChange('title')}
                             value={props.values.title}
                             onBlur={props.handleBlur('title')}
-                            className="border border-stone-300 p-2.5 text-lg rounded-lg w-full"
+                            className="border border-stone-500 pl-2 h-16 text-lg rounded-lg w-full"
+                            placeholderTextColor={'gray'}
                         />
-                        <Text className="text-red-600">{props.touched.title && props.errors.title}</Text>
+                        <Text className="text-red-600 my-2">{props.touched.title && props.errors.title}</Text>
                         <TextInput
                             placeholder='Množství'
                             onChangeText={props.handleChange('amount')}
                             value={props.values.amount}
                             onBlur={props.handleBlur('amount')}
-                            className="border border-stone-300 p-2.5 text-lg rounded-lg w-full"
+                            className="border border-stone-500 pl-2 h-16 text-lg rounded-lg w-full"
+                            placeholderTextColor={'gray'}
                         />
-                        <Text className="text-red-600">{props.touched.amount && props.errors.amount}</Text>
-                        <TextInput
-                            placeholder='Jednotka množství (např. g)'
-                            onChangeText={props.handleChange('unit')}
-                            value={props.values.unit}
-                            onBlur={props.handleBlur('unit')}
-                            className="border border-stone-300 p-2.5 text-lg rounded-lg w-full"
-                        />
-                        <Text className="text-red-600 mb-5">{props.touched.unit && props.errors.unit}</Text>
+                        <Text className="text-red-600 my-2">{props.touched.amount && props.errors.amount}</Text>
+                        <Picker
+                            selectedValue={props.values.unit}
+                            onValueChange={(unitValue) => {
+                                props.setFieldValue('unit', unitValue)
+                            }}
+                            style={styles.pickerSurvey}
+                            >
+                            {unitValues.map((unitValue, key) => (
+                                <Picker.Item key={key} label={unitValue.label} value={unitValue.value} />
+                            ))}
+                        </Picker>
+                        <Text className="text-red-600 mt-2 mb-5">{props.touched.unit && props.errors.unit}</Text>
                         <IconButton icon={"send"} onPress={props.handleSubmit} />
                     </View>
                 )}
