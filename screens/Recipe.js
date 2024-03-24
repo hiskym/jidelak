@@ -11,16 +11,13 @@ import { fetchRecipeData, fetchRecipeIngredients } from '../utils/recipeUtils';
 import { handleCheckboxChange } from '../utils/checkboxUtils';
 import { handleAddToCartRecipe } from '../utils/CartUtils';
 import { addToFavorites } from '../utils/FavoriteUtils';
-import { translateNutrition } from '../utils/recipeUtils';
+import { translateNutrition, translateAlergens, translateCategory } from '../utils/recipeUtils';
 
 export default function Recipe({ route }) {
 
     const { user } = useUserStore();
 
     const { addToCartRecipe } = useCartStore();
-
-    // const { name, alergens, category, cook_time, description, diet, image, ingredients, nutrition, prepare_time, servings, steps, price } = route.params.data;
-    // const { id } = route.params.id
 
     const [recipeData, setRecipeData] = useState(null);
     const [recipeIngredients, setRecipeIngredients] = useState(null)
@@ -30,8 +27,6 @@ export default function Recipe({ route }) {
         fetchRecipeData(route.params.id, setRecipeData, setCheckedSteps);
         fetchRecipeIngredients(route.params.id, setRecipeIngredients);
     }, [route.params.id]);
-
-    // ----- veci pro pridani do menu
 
     const [showDetails, setShowDetails] = useState(false);
 
@@ -84,18 +79,16 @@ export default function Recipe({ route }) {
                 <View className="flex-row my-3">
                     <IconButton icon={"heart"} onPress={() => handleAddToFavorites()} />
                     <IconButton icon={"restaurant"} onPress={handleShowDetails} />
-                    <IconButton icon={"cart"} onPress={() => handleAddToCartRecipe(recipeIngredients, addToCartRecipe )} />
+                    <IconButton icon={"cart"} onPress={() => handleAddToCartRecipe(recipeIngredients, addToCartRecipe)} />
                 </View>
-                {/* detaily */}
                 {showDetails && (
-                        <MenuAddDetails
+                    <MenuAddDetails
                         showDetails={showDetails}
                         setShowDetails={setShowDetails}
                         recipeId={route.params.id}
                         userId={user.uid}
                     />
                 )}
-                {/* detaily konec */}
                 <View className="flex-row my-3 w-[90%] flex-wrap justify-center">
                     <Text className="mr-2 text-slate-900">Příprava: {prepare_time} min</Text>
                     <Text className="mr-2 text-slate-900">Vaření: {cook_time} min</Text>
@@ -154,8 +147,8 @@ export default function Recipe({ route }) {
                 </View>
                 <View className="border-[0.5px] w-[60%] border-slate-300" />
                 <View className="flex flex-1 my-2 p-2 w-[90%]">
-                    <Text className="font-bold text-slate-900">Alergeny: {alergens.length > 1 ? alergens.join(', ') : alergens}</Text>
-                    <Text className="text-slate-900">Kategorie: {category.length > 1 ? category.join(', ') : category}</Text>
+                    <Text className="font-bold text-slate-900">Alergeny: {alergens.length > 1 ? alergens.map(alergen => translateAlergens[alergen]).join(', ') : translateAlergens[alergens]}</Text>
+                    <Text className="text-slate-900">Kategorie: {category.length > 1 ? category.map(category => translateCategory[category]).join(', ') : translateCategory[category]}</Text>
                     <Text className="text-slate-900">Stravování: {diet.length > 1 ? diet.join(', ') : diet}</Text>
                     <Text className="font-bold text-xs mt-5 text-slate-900">Přibližná cena a výživové hodnoty jsou vždy uvedeny pro 1 porci.</Text>
                 </View>

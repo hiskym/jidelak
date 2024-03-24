@@ -8,7 +8,7 @@ export default function SearchHelper(query) {
 
   for (const letter in recipeNames) {
     recipeNames[letter].forEach((recipe) => {
-      if (recipe.toUpperCase().includes(queryUpperCase) && recipe.toUpperCase() !== '') {
+      if (recipe.toUpperCase().includes(queryUpperCase) && recipe.toUpperCase() !== '') {
         results.push(recipe);
       }
     });

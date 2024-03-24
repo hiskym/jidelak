@@ -13,7 +13,7 @@ export default function MealDayFilter({ setShowDetails, selectedDay, setSelected
                 { text: 'OK' }
             ])
         } else {
-            console.log(selectedDay)
+            // console.log(selectedDay)
             setShowDetails(false)
         }
     }

@@ -24,8 +24,6 @@ export default function Analytics() {
 
     const [interval, setInterval] = useState('');
 
-    // date vypocty
-
     const currentDate = new Date();
 
     const dateMinusSeven = new Date(currentDate);
@@ -41,8 +39,6 @@ export default function Analytics() {
     const currentDayEnd = Timestamp.fromDate(endOfDay(currentDate));
     const weekStart = Timestamp.fromDate(startOfDay(dateMinusSeven))
     const monthStart = Timestamp.fromDate(startOfDay(dateMinusThirty))
-
-    //zisk dat pro chart
 
     useEffect(() => {
         setLoading(true)
@@ -89,27 +85,27 @@ export default function Analytics() {
             <View className="">
                 <SelectChartOption setInterval={setInterval} interval={interval} />
                 {loading && <ActivityIndicator size="small" color="tomato" className="flex-1 justify-center rounded-sm scale-150" />}
-                {chartData.length > 0 && chartData[0].kcal != undefined  && <Chart data={chartData}/>}
-                {totalCalories !== 0 && 
-                <>
-                    <View className="flex items-center mt-5">
-                        <Text className="text-xl font-bold text-slate-900">Celkem snězeno za období:</Text>
-                        <Text className="text-lg text-slate-900">Kalorie: {totalCalories} kcal</Text>
-                        <Text className="text-lg text-slate-900">Bílkoviny: {totalProteins} g</Text>
-                        <Text className="text-lg text-slate-900">Sacharidy: {totalCarbs} g</Text>
-                        <Text className="text-lg text-slate-900">Tuky: {totalFats} g</Text>
-                        <Text className="text-lg text-slate-900">Vláknina: {totalFiber} g</Text>
-                    </View>
-                    <View className="items-center mt-5">
-                        <Text className="text-base text-slate-900">Pro nejlepší výsledky a zdraví doporučujeme, aby se <Text className="text-orange-500">oranžová linka</Text> dlouhodobě pohybovala mezi <Text className="text-red-500">červenou</Text> a <Text className="text-blue-500">modrou</Text> a ideálně se co nejvíce držela <Text className="text-teal-600">zelené</Text>. Příjem kalorií můžete změnit v nastavení profilu.</Text>
-                    </View>
-                    <View className="items-center mt-5 mb-10">
-                        <Text className="text-lg text-slate-900"><Text className="text-teal-600">•</Text>Doporučený denní příjem kalorií: {userMacros.calories} kcal</Text>
-                        <Text className="text-lg text-slate-900"><Text className="text-red-500">•</Text>Minimální denní příjem kalorií: {userMacros.calories - 300} kcal</Text>
-                        <Text className="text-lg text-slate-900"><Text className="text-blue-500">•</Text>Maximální denní příjem kalorií: {userMacros.calories + 300} kcal</Text>
-                        <Text className="text-lg text-slate-900"><Text className="text-orange-500">•</Text>Váš příjem pro daný den</Text>
-                    </View>
-                </>
+                {chartData.length > 0 && chartData[0].kcal != undefined && <Chart data={chartData} />}
+                {totalCalories !== 0 &&
+                    <>
+                        <View className="flex items-center mt-5">
+                            <Text className="text-xl font-bold text-slate-900">Celkem snězeno za období:</Text>
+                            <Text className="text-lg text-slate-900">Kalorie: {totalCalories} kcal</Text>
+                            <Text className="text-lg text-slate-900">Bílkoviny: {totalProteins} g</Text>
+                            <Text className="text-lg text-slate-900">Sacharidy: {totalCarbs} g</Text>
+                            <Text className="text-lg text-slate-900">Tuky: {totalFats} g</Text>
+                            <Text className="text-lg text-slate-900">Vláknina: {totalFiber} g</Text>
+                        </View>
+                        <View className="items-center mt-5">
+                            <Text className="text-base text-slate-900">Pro nejlepší výsledky a zdraví doporučujeme, aby se <Text className="text-orange-500">oranžová linka</Text> dlouhodobě pohybovala mezi <Text className="text-red-500">červenou</Text> a <Text className="text-blue-500">modrou</Text> a ideálně se co nejvíce držela <Text className="text-teal-600">zelené</Text>. Příjem kalorií můžete změnit v nastavení profilu.</Text>
+                        </View>
+                        <View className="items-center mt-5 mb-10">
+                            <Text className="text-lg text-slate-900"><Text className="text-teal-600">•</Text>Doporučený denní příjem kalorií: {userMacros.calories} kcal</Text>
+                            <Text className="text-lg text-slate-900"><Text className="text-red-500">•</Text>Minimální denní příjem kalorií: {userMacros.calories - 300} kcal</Text>
+                            <Text className="text-lg text-slate-900"><Text className="text-blue-500">•</Text>Maximální denní příjem kalorií: {userMacros.calories + 300} kcal</Text>
+                            <Text className="text-lg text-slate-900"><Text className="text-orange-500">•</Text>Váš příjem pro daný den</Text>
+                        </View>
+                    </>
                 }
             </View>
         </ScrollView>

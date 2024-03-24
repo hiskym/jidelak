@@ -2,7 +2,7 @@ import { View, Text, TouchableOpacity, TextInput, Alert, Keyboard, TouchableWith
 import React from 'react'
 import { useState } from 'react';
 import { FIREBASE_AUTH, usersRef } from '../firebaseConfig';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { doc, setDoc } from 'firebase/firestore';
@@ -12,7 +12,8 @@ import About from './About';
 
 const loginSchema = yup.object({
   email: yup.string().email('Špatně zadaný email').required('Pro registraci je nutné zadat email.'),
-  password: yup.string().required('Musíte si zvolit heslo').min(8),
+  password: yup.string().required('Musíte si zvolit heslo').min(8, 'Heslo je moc krátké'),
+  confirmpassword: yup.string().oneOf([yup.ref('password')], 'Hesla nejsou stejná'),
   username: yup.string().required('Zadejte své jméno').min(3)
 })
 
@@ -22,13 +23,15 @@ export default function Register({ navigation }) {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setconfirmPassword] = useState('');
   const [username, setUsername] = useState('');
   const auth = FIREBASE_AUTH;
 
   const signUp = async (email, username, password) => {
     try {
       const response = await createUserWithEmailAndPassword(auth, email, password);
-      console.log(response);
+      // console.log(response);
+      await sendEmailVerification(response.user);
 
       const userDoc = doc(usersRef, response.user.uid)
 
@@ -38,7 +41,7 @@ export default function Register({ navigation }) {
 
       Alert.alert('Registrace úspěsná!', 'Na email byl odeslán potvrzovací odkaz.', [
         {
-          text: 'OK'
+          text: 'OK',
         }
       ])
       navigation.push("Survey")
@@ -83,7 +86,7 @@ export default function Register({ navigation }) {
       </Modal>
 
       <Formik
-        initialValues={{ email: email, username: username, password: password }}
+        initialValues={{ email: email, username: username, password: password, confirmPassword: confirmPassword }}
         validationSchema={loginSchema}
         onSubmit={(values, actions) => {
           actions.resetForm();
@@ -96,6 +99,7 @@ export default function Register({ navigation }) {
             <View className="items-center my-5">
               <IconButton icon='information-circle' onPress={() => setModalOpen(true)} />
             </View>
+            <Text className="text-slate-900">Váš e-mail</Text>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
               <View className="flex w-full h-16 m-2">
                 <TextInput
@@ -104,10 +108,11 @@ export default function Register({ navigation }) {
                   autoCapitalize='none'
                   onChangeText={props.handleChange('email')}
                   onBlur={props.handleBlur('email')}
-                  className="border border-stone-500 p-2.5 text-lg rounded-lg" />
+                  className="border border-stone-500 pl-2.5 h-16 text-lg rounded-lg" />
               </View>
             </TouchableWithoutFeedback>
             <Text className="text-red-600">{props.touched.email && props.errors.email}</Text>
+            <Text className="text-slate-900">Uživatelské jméno</Text>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
               <View className="flex w-full h-16 m-2">
                 <TextInput
@@ -116,9 +121,10 @@ export default function Register({ navigation }) {
                   autoCapitalize='none'
                   onChangeText={props.handleChange('username')}
                   onBlur={props.handleBlur('username')}
-                  className="border border-stone-500 p-2.5 text-lg rounded-lg" />
+                  className="border border-stone-500 pl-2.5 h-16 text-lg rounded-lg" />
               </View>
             </TouchableWithoutFeedback>
+            <Text className="text-slate-900">Heslo</Text>
             <Text className="text-red-600">{props.touched.username && props.errors.username}</Text>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
               <View className="flex w-full h-16 m-2">
@@ -129,10 +135,24 @@ export default function Register({ navigation }) {
                   autoCapitalize='none'
                   onChangeText={props.handleChange('password')}
                   onBlur={props.handleBlur('password')}
-                  className="border border-stone-500 p-2.5 text-lg rounded-lg" />
+                  className="border border-stone-500 pl-2.5 h-16 text-lg rounded-lg" />
               </View>
             </TouchableWithoutFeedback>
-            <Text className="text-red-600 mb-5">{props.touched.password && props.errors.password}</Text>
+            <Text className="text-red-600">{props.touched.password && props.errors.password}</Text>
+            <Text className="text-slate-900">Heslo znovu pro potvrzení</Text>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+              <View className="flex w-full h-16 m-2">
+                <TextInput
+                  secureTextEntry={true}
+                  value={props.values.confirmPassword}
+                  placeholder='&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;'
+                  autoCapitalize='none'
+                  onChangeText={props.handleChange('confirmPassword')}
+                  onBlur={props.handleBlur('confirmPassword')}
+                  className="border border-stone-500 pl-2.5 h-16 text-lg rounded-lg" />
+              </View>
+            </TouchableWithoutFeedback>
+            <Text className="text-red-600 mb-5">{props.touched.confirmPassword && props.errors.confirmPassword}</Text>
             <TouchableOpacity onPress={props.handleSubmit} className="bg-teal-600 rounded-xl py-3 px-5">
               <Text className="text-xl text-white font-bold">Zaregistrovat se</Text>
             </TouchableOpacity>

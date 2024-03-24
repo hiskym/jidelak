@@ -1,4 +1,4 @@
-import { ScrollView, Text, ActivityIndicator, Alert } from 'react-native'
+import { ScrollView, Text, ActivityIndicator, Alert, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import FavoriteArea from '../components/FavoriteArea';
 import { usersRef, recipesRef, favoritesRef } from '../firebaseConfig';
@@ -8,9 +8,7 @@ import { getRecipeData } from '../utils/cacheUtils';
 
 export default function Favorites({ navigation }) {
 
-  // const [favorites, setFavorites] = useState(["0DPQ881QkuN1B2mMEbD6", "0DPQ881QkuN1B2mMEbD6"]);
-
-  const {user} = useUserStore();
+  const { user } = useUserStore();
 
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
@@ -23,8 +21,8 @@ export default function Favorites({ navigation }) {
     const favoritesQuery = query(favoritesRef, where('userId', '==', user.uid));
 
     const unsubscribe = onSnapshot(favoritesQuery, async (querySnapshot) => {
-    try {
-      
+      try {
+
         const favoritesData = [];
 
         for (const docSnapshot of querySnapshot.docs) {
@@ -48,19 +46,20 @@ export default function Favorites({ navigation }) {
 
         setFavorites(favoritesData)
         setLoading(false)
-      }catch (error) {
+      } catch (error) {
         console.error('Error fetching favorites and recipes:', error);
         setLoading(false);
-      
-  }}) 
-    
-  console.log(favorites)
+
+      }
+    })
+
+    // console.log(favorites)
     return () => unsubscribe;
 
-    
+
   }, [user.uid])
 
-// testovaci funkce
+  // test function
   const clearFavorites = () => {
 
     const userDoc = doc(usersRef, user.uid);
@@ -74,7 +73,7 @@ export default function Favorites({ navigation }) {
         {
           text: 'OK',
           onPress: async () => {
-            await updateDoc(userDoc, {favorites: deleteField()})
+            await updateDoc(userDoc, { favorites: deleteField() })
             setFavorites([])
           }
         },
@@ -87,8 +86,11 @@ export default function Favorites({ navigation }) {
   return (
     <ScrollView className="flex-1">
       {loading && <ActivityIndicator size="small" color="tomato" className="flex-1 justify-center rounded-sm scale-150 mt-5" />}
-      {err && <Text>Chyba při načítání. Zkuste to prosím později.</Text>}
+      {err && <Text className="text-slate-900">Chyba při načítání. Zkuste to prosím později.</Text>}
       <FavoriteArea favorites={favorites} navigation={navigation} />
+      {favorites.length === 0 && (<View className="flex items-center">
+        <Text className="text-slate-900 w-[90%] text-center">Vypadá to, že tu nic není. Podívejte se na recepty a uložte si nějaké. 😊</Text>
+      </View>)}
     </ScrollView>
   )
 }

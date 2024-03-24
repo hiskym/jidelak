@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
     picker: {
-        height: 64,
+        maxHeight: 90,
         width: '100%',
         borderColor: 'rgb(120 113 108)',
         borderWidth: 1,
@@ -26,7 +26,7 @@ export const styles = StyleSheet.create({
         backgroundColor: 'white'
     },
     pickerAddMeal: {
-        height: 64,
+        maxHeight: 90,
         width: '80%',
         borderColor: 'rgb(120 113 108)',
         borderWidth: 1,
@@ -38,5 +38,5 @@ export const styles = StyleSheet.create({
         marginBottom: 10,
         backgroundColor: 'white'
     },
-    
+
 })

@@ -26,32 +26,29 @@ export default function Day({ meals, navigation, day, userMacros }) {
     <View className="flex flex-row flex-wrap p-2 justify-center">
       <View className="flex flex-row flex-wrap [w-90%] items-center justify-center">
         <View className="flex flex-row">
-        <Text className="my-2 text-xs text-slate-900">Kalorie: </Text>
-        <Text className={`my-2 text-xs text-slate-900 ${calories < userMacros.calories - 300 || calories > userMacros.calories + 300  ? 'text-red-500' : 'text-teal-600'}`}>{calories} </Text>
+          <Text className="my-2 text-xs text-slate-900">Kalorie: </Text>
+          <Text className={`my-2 text-xs text-slate-900 ${calories < userMacros.calories - 300 || calories > userMacros.calories + 300 ? 'text-red-500' : 'text-teal-600'}`}>{calories} </Text>
 
         </View>
         <View className="flex flex-row">
-        <Text className="my-2 text-xs text-slate-900">Sacharidy: </Text>
-        <Text className={`my-2 text-xs text-slate-900 ${carbs < 0.9* userMacros.carbs || carbs > 1.1* userMacros.carbs  ? 'text-red-500' : 'text-teal-600'}`}>{carbs}g </Text>
+          <Text className="my-2 text-xs text-slate-900">Sacharidy: </Text>
+          <Text className={`my-2 text-xs text-slate-900 ${carbs < 0.9 * userMacros.carbs || carbs > 1.1 * userMacros.carbs ? 'text-red-500' : 'text-teal-600'}`}>{carbs}g </Text>
         </View>
         <View className="flex flex-row">
-        <Text className="my-2 text-xs text-slate-900">Bílkoviny: </Text>
-        <Text className={`my-2 text-xs text-slate-900 ${proteins < 0.9* userMacros.proteins || proteins > 1.1* userMacros.proteins  ? 'text-red-500' : 'text-teal-600'}`}>{proteins}g </Text>
+          <Text className="my-2 text-xs text-slate-900">Bílkoviny: </Text>
+          <Text className={`my-2 text-xs text-slate-900 ${proteins < 0.9 * userMacros.proteins || proteins > 1.1 * userMacros.proteins ? 'text-red-500' : 'text-teal-600'}`}>{proteins}g </Text>
         </View>
         <View className="flex flex-row">
-        <Text className="my-2 text-xs text-slate-900">Tuky: </Text>
-        <Text className={`my-2 text-xs text-slate-900 ${fats < 0.9* userMacros.fats || fats > 1.1* userMacros.fats  ? 'text-red-500' : 'text-teal-600'}`}>{fats}g </Text>
+          <Text className="my-2 text-xs text-slate-900">Tuky: </Text>
+          <Text className={`my-2 text-xs text-slate-900 ${fats < 0.9 * userMacros.fats || fats > 1.1 * userMacros.fats ? 'text-red-500' : 'text-teal-600'}`}>{fats}g </Text>
         </View>
         <View className="flex flex-row">
-        <Text className="my-2 text-xs text-slate-900">Vláknina: </Text>
-        <Text className={`my-2 text-xs text-slate-900 ${fiber < 0.9* userMacros.fiber ? 'text-red-500' : 'text-teal-600'}`}>{fiber}g</Text>
+          <Text className="my-2 text-xs text-slate-900">Vláknina: </Text>
+          <Text className={`my-2 text-xs text-slate-900 ${fiber < 0.9 * userMacros.fiber ? 'text-red-500' : 'text-teal-600'}`}>{fiber}g</Text>
         </View>
-
-
-
       </View>
       <View className="flex flex-wrap flex-row justify-center">
-      {dayMeals.map((meal, mealIndex) => (
+        {dayMeals.map((meal, mealIndex) => (
           <View key={mealIndex} className="flex flex-row">
             <TouchableOpacity onPress={() => navigation.navigate('MealDetail', meal)}>
               <FoodCard
@@ -63,7 +60,7 @@ export default function Day({ meals, navigation, day, userMacros }) {
             </TouchableOpacity>
           </View>
         ))}
-    </View>
+      </View>
     </View>
   )
 }

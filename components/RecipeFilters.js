@@ -1,9 +1,10 @@
-import { View, Text, TouchableOpacity, Alert } from 'react-native'
+import { View, Text, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { Picker } from '@react-native-picker/picker';
 import IconButton from './IconButton';
-import { timeValues, ingredientValues, caloriesValues, categoryValues  } from '../utils/PickerValues';
+import { timeValues, ingredientValues, caloriesValues, categoryValues } from '../utils/PickerValues';
 import { styles } from '../styles/GlobalStyles';
+import MultiSelect from 'react-native-multiple-select';
 
 
 export default function RecipeFilters({ recipes, handleClearFilter, handleGetAllRecipes, setTimeQuery, setIngredient, setCalories, setCategory }) {
@@ -25,19 +26,19 @@ export default function RecipeFilters({ recipes, handleClearFilter, handleGetAll
     const [selectedCategory, setSelectedCategory] = useState('');
 
     const handleConfirm = (filterCategory) => {
-        if (filterCategory === 'time' && time > 0) {
+        if (filterCategory === 'time' && time > 0) {
             setTimeQuery(time)
             setShowTimePicker(false)
             setTime(0);
-        } else if (filterCategory === 'ingredient' && selectedIngredient !== '') {
+        } else if (filterCategory === 'ingredient' && selectedIngredient !== '') {
             setIngredient(selectedIngredient);
             setShowIngredientPicker(false)
             setSelectedIngredient('');
-        } else if (filterCategory === 'calories' && selectedCalories !== '') {
+        } else if (filterCategory === 'calories' && selectedCalories !== '') {
             setCalories(selectedCalories);
             setShowCaloriesPicker(false)
             setSelectedCalories(0);
-        } else if (filterCategory === 'category' && selectedCategory !== '') {
+        } else if (filterCategory === 'category' && selectedCategory !== '') {
             setCategory(selectedCategory);
             setShowCategoryPicker(false)
             setSelectedCategory('');
@@ -53,7 +54,7 @@ export default function RecipeFilters({ recipes, handleClearFilter, handleGetAll
             setShowTimePicker(false)
         } else if (pickerCategory === 'ingredient') {
             setShowIngredientPicker(false)
-        } else if (pickerCategory === 'calories'){
+        } else if (pickerCategory === 'calories') {
             setShowCaloriesPicker(false)
         } else if (pickerCategory === 'category') {
             setShowCategoryPicker(false)
@@ -66,21 +67,37 @@ export default function RecipeFilters({ recipes, handleClearFilter, handleGetAll
             setShowIngredientPicker(false)
             setShowCaloriesPicker(false)
             setShowCategoryPicker(false)
+
+            if (showTimePicker === true) {
+                setShowTimePicker(false)
+            }
         } else if (pickerCategory === 'ingredient') {
             setShowIngredientPicker(true)
             setShowTimePicker(false);
             setShowCaloriesPicker(false)
             setShowCategoryPicker(false)
-        } else if (pickerCategory === 'calories'){
+
+            if (showIngredientPicker === true) {
+                setShowIngredientPicker(false)
+            }
+        } else if (pickerCategory === 'calories') {
             setShowCaloriesPicker(true)
             setShowCategoryPicker(false)
             setShowIngredientPicker(false)
             setShowTimePicker(false);
+
+            if (showCaloriesPicker === true) {
+                setShowCaloriesPicker(false)
+            }
         } else if (pickerCategory === 'category') {
             setShowCategoryPicker(true)
             setShowIngredientPicker(false)
             setShowTimePicker(false);
             setShowCaloriesPicker(false)
+
+            if (showCategoryPicker === true) {
+                setShowCategoryPicker(false)
+            }
         }
     }
 
@@ -92,19 +109,19 @@ export default function RecipeFilters({ recipes, handleClearFilter, handleGetAll
                 )}
 
                 {recipes.length === 0 && (
-                    <IconButton icon="nutrition" onPress={() => handleShow('ingredient')}  />
+                    <IconButton icon="nutrition" onPress={() => handleShow('ingredient')} color={showIngredientPicker === true && '#0D9488'} />
                 )}
 
                 {recipes.length === 0 && (
-                    <IconButton icon="fast-food" onPress={() => handleShow('category')}  />
+                    <IconButton icon="fast-food" onPress={() => handleShow('category')} color={showCategoryPicker === true && '#0D9488'} />
                 )}
 
                 {recipes.length === 0 && (
-                    <IconButton icon="time" onPress={() => handleShow('time')} />
+                    <IconButton icon="time" onPress={() => handleShow('time')} color={showTimePicker === true && '#0D9488'} />
                 )}
 
                 {recipes.length === 0 && (
-                    <IconButton icon="bicycle" onPress={() => handleShow('calories')} />
+                    <IconButton icon="bicycle" onPress={() => handleShow('calories')} color={showCaloriesPicker === true && '#0D9488'} />
                 )}
 
                 {recipes.length !== 0 && (

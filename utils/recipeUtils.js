@@ -1,4 +1,4 @@
-import { doc, getDoc, getDocs, query, where, limit, startAfter} from "firebase/firestore";
+import { doc, getDoc, getDocs, query, where, limit, startAfter } from "firebase/firestore";
 import { recipesRef, recipeIngredientsRef, ingredientsRef } from "../firebaseConfig";
 import { getRecipeData, storeRecipeData, getRecipeIngredients, storeRecipeIngredients, isExpired } from "./cacheUtils";
 
@@ -7,7 +7,7 @@ export const fetchRecipeData = async (recipeId, setRecipeData, setCheckedSteps) 
 
         const cachedData = await getRecipeData(recipeId)
 
-        if (cachedData && !isExpired(cachedData.timestamp)) {
+        if (cachedData && !isExpired(cachedData.timestamp)) {
             setRecipeData(cachedData);
             setCheckedSteps(new Array(cachedData.steps.length).fill(false));
             return;
@@ -19,7 +19,7 @@ export const fetchRecipeData = async (recipeId, setRecipeData, setCheckedSteps) 
         if (recipeSnapshot.exists()) {
             const recipeData = recipeSnapshot.data();
             const timestamp = Date.now();
-            const recipeDataWithTimestamp = {...recipeData, timestamp}
+            const recipeDataWithTimestamp = { ...recipeData, timestamp }
             await storeRecipeData(recipeId, recipeDataWithTimestamp);
             setRecipeData(recipeData);
             setCheckedSteps(new Array(recipeData.steps.length).fill(false));
@@ -35,8 +35,9 @@ export const fetchRecipeIngredients = async (recipeId, setRecipeIngredients) => 
     try {
         const cachedData = await getRecipeIngredients(recipeId)
 
-        if (cachedData && !isExpired(cachedData[cachedData.length -1].timestamp)) {
+        if (cachedData && !isExpired(cachedData.timestamp)) {
             setRecipeIngredients(cachedData)
+            // console.log(cachedData)
             return;
         }
 
@@ -53,7 +54,9 @@ export const fetchRecipeIngredients = async (recipeId, setRecipeIngredients) => 
             if (ingredientDoc.exists()) {
                 const { title, unit } = ingredientDoc.data();
 
-                const ingredientData = { title, unit, amount };
+                const timestamp = Date.now();
+
+                const ingredientData = { title, unit, amount, timestamp };
 
                 ingredientsData.push(ingredientData);
 
@@ -62,10 +65,8 @@ export const fetchRecipeIngredients = async (recipeId, setRecipeIngredients) => 
             }
 
         }
-        const timestamp = Date.now();
-        const ingredientsDataWithTimestamp = [...ingredientsData, {'timestamp': timestamp}]
 
-        await storeRecipeIngredients(recipeId, ingredientsDataWithTimestamp)
+        await storeRecipeIngredients(recipeId, ingredientsData)
         setRecipeIngredients(ingredientsData);
 
         // console.log(ingredientsData);
@@ -73,14 +74,6 @@ export const fetchRecipeIngredients = async (recipeId, setRecipeIngredients) => 
         console.error(error);
     }
 
-}
-
-export const translateNutrition = {
-    "calories": "Kalorie",
-    "proteins": "Bílkoviny",
-    "carbs": "Sacharidy",
-    "fats": "Tuky",
-    "fiber": "Vláknina"
 }
 
 export const getAllRecipes = async (setLoading, setErr, lastDocument, setLastDocument, setRecipes) => {
@@ -175,7 +168,7 @@ export const getAllRecipesByCookTime = async (setLoading, setErr, lastDocument, 
 
         if (querySnapshot.docs.length > 0) {
             setLastDocument(null);
-            console.log(recipesData)
+            // console.log(recipesData)
             setRecipes([...recipesData]);
         } else {
             setLastDocument(null);
@@ -209,7 +202,7 @@ export const getAllRecipesByCalories = async (setLoading, setErr, lastDocument, 
 
         if (querySnapshot.docs.length > 0) {
             setLastDocument(null);
-            console.log(recipesData)
+            // console.log(recipesData)
             setRecipes([...recipesData]);
         } else {
             setLastDocument(null);
@@ -290,7 +283,7 @@ export const getAllRecipesByCategory = async (setLoading, setErr, lastDocument, 
 
         const querySnapshot = await getDocs(recipeQuery);
 
-        console.log(querySnapshot.docs)
+        // console.log(querySnapshot.docs)
 
         const recipesData = querySnapshot.docs.map((doc) => ({
             id: doc.id,
@@ -304,7 +297,7 @@ export const getAllRecipesByCategory = async (setLoading, setErr, lastDocument, 
 
         if (querySnapshot.docs.length > 0) {
             setLastDocument(null);
-            console.log(recipesData)
+            // console.log(recipesData)
             setRecipes([...recipesData]);
         } else {
             setLastDocument(null);
@@ -316,4 +309,37 @@ export const getAllRecipesByCategory = async (setLoading, setErr, lastDocument, 
         setRecipes([]);
     }
     setLoading(false)
+}
+
+export const translateNutrition = {
+    "calories": "Kalorie",
+    "proteins": "Bílkoviny",
+    "carbs": "Sacharidy",
+    "fats": "Tuky",
+    "fiber": "Vláknina"
+}
+
+export const translateAlergens = {
+    "no alergens": "žádné",
+    "gluten": "lepek",
+    "dairy": "mléko",
+    "egg": "vejce",
+    "fish": "ryba",
+    "krill": "korýši",
+    "peanuts": "arašídy",
+    "soybeans": "sója",
+    "nuts": "skořápkové plody",
+    "celery": "celer",
+    "mustard": "hořčice",
+    "sesame": "sezamová semena",
+    "SO2": "oxid siřičitý",
+    "lupine": "vlčí bob",
+    "shellfish": "měkkýši"
+}
+
+export const translateCategory = {
+    "breakfast": "anídaně",
+    "lunch": "oběd",
+    "dinner": "večeře",
+    "snac": "svačinka",
 }

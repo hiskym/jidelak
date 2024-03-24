@@ -1,5 +1,5 @@
 import { mealsRef, recipesRef } from "../firebaseConfig";
-import { addDoc, deleteDoc, doc, getDocs, query, where, getDoc} from "firebase/firestore";
+import { addDoc, deleteDoc, doc, getDocs, query, where, getDoc } from "firebase/firestore";
 import { getRecipeData } from "./cacheUtils";
 
 export const addToMenu = async (recipeId, userId, day, type, note) => {
@@ -23,11 +23,11 @@ export const sumUpNutrition = (dayMeals, setCalories, setFats, setCarbs, setFibe
     let totalProteins = 0;
 
     dayMeals.forEach((meal) => {
-      totalCalories += meal.recipe.nutrition.calories;
-      totalFats += meal.recipe.nutrition.fats;
-      totalCarbs += meal.recipe.nutrition.carbs;
-      totalFiber += meal.recipe.nutrition.fiber;
-      totalProteins += meal.recipe.nutrition.proteins;
+        totalCalories += meal.recipe.nutrition.calories;
+        totalFats += meal.recipe.nutrition.fats;
+        totalCarbs += meal.recipe.nutrition.carbs;
+        totalFiber += meal.recipe.nutrition.fiber;
+        totalProteins += meal.recipe.nutrition.proteins;
     });
 
     setCalories(totalCalories);
@@ -35,17 +35,17 @@ export const sumUpNutrition = (dayMeals, setCalories, setFats, setCarbs, setFibe
     setCarbs(totalCarbs);
     setFiber(totalFiber);
     setProteins(totalProteins);
-  }
+}
 
-  export const removeFromMenu = async (mealId) => {
+export const removeFromMenu = async (mealId) => {
     try {
         await deleteDoc(doc(mealsRef, mealId));
     } catch (error) {
         console.error(error)
     }
-  }
+}
 
-export const fetchDailyMacros = async (userId, currentDayEnd, weekStart, monthStart, endOfYear, startOfYear, setDailyMacros, interval, setLoading) =>  {
+export const fetchDailyMacros = async (userId, currentDayEnd, weekStart, monthStart, endOfYear, startOfYear, setDailyMacros, interval, setLoading) => {
 
     let mealsQuery;
 
@@ -55,7 +55,7 @@ export const fetchDailyMacros = async (userId, currentDayEnd, weekStart, monthSt
         mealsQuery = query(mealsRef, where('userId', '==', userId), where('day', '<=', currentDayEnd), where('day', '>=', monthStart));
     } else if (interval === 'year') {
         mealsQuery = query(mealsRef, where('userId', '==', userId), where('day', '<=', endOfYear), where('day', '>=', startOfYear));
-    } else if (interval === 'full'){
+    } else if (interval === 'full') {
         mealsQuery = query(mealsRef, where('userId', '==', userId));
     } else {
         setDailyMacros([]);
@@ -64,19 +64,17 @@ export const fetchDailyMacros = async (userId, currentDayEnd, weekStart, monthSt
     }
 
     try {
-        // 
         const mealsSnapshot = await getDocs(mealsQuery);
-        
+
         const mealsByDate = {};
         mealsSnapshot.forEach(mealDoc => {
             const { recipeId, day } = mealDoc.data();
-            const mealDate = day.toDate().toISOString().split('T')[0]; 
+            const mealDate = day.toDate().toISOString().split('T')[0];
             if (!mealsByDate[mealDate]) {
                 mealsByDate[mealDate] = [];
             }
-            mealsByDate[mealDate].push({recipeId});
+            mealsByDate[mealDate].push({ recipeId });
         });
-        // console.log(mealsByDate)
 
         const dailyMacros = [];
         for (const date in mealsByDate) {
@@ -105,18 +103,18 @@ export const fetchDailyMacros = async (userId, currentDayEnd, weekStart, monthSt
 
                     if (recipeDoc.exists()) {
                         recipeData = recipeDoc.data().nutrition;
-    
+
                         totalCalories += recipeData.calories || 0;;
                         totalProteins += recipeData.proteins || 0;
                         totalCarbs += recipeData.carbs || 0;
                         totalFiber += recipeData.fats || 0;
                         totalFats += recipeData.fiber || 0;
                     }
-                }   
+                }
             }
             dailyMacros.push({ date, totalCalories, totalProteins, totalFats, totalCarbs, totalFiber });
         }
-        
+
         const dailyMacrosSorted = dailyMacros.sort((a, b) => new Date(a.date) - new Date(b.date));
         setDailyMacros(dailyMacrosSorted);
         return dailyMacros;

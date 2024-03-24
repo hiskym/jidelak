@@ -1,7 +1,7 @@
 import React from 'react'
 import { Text, View, ScrollView, ActivityIndicator, Modal, TouchableWithoutFeedback, Keyboard, Alert } from 'react-native';
 import Day from '../components/Day';
-import { recipesRef, usersRef } from '../firebaseConfig';
+import { recipesRef } from '../firebaseConfig';
 import { getDoc, doc, query, onSnapshot, where, Timestamp } from 'firebase/firestore';
 import { useState, useEffect } from 'react';
 import { mealsRef } from '../firebaseConfig';
@@ -18,7 +18,7 @@ export default function Menu({ navigation }) {
 
   const { user } = useUserStore();
 
-  const {addToCartRecipe} = useCartStore();
+  const { addToCartRecipe } = useCartStore();
 
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
@@ -91,7 +91,7 @@ export default function Menu({ navigation }) {
   }, [user.uid])
 
   const handleAddToCart = async () => {
-    Alert.alert('Přidat do košíku','Chcete přidat jídelníček do košíku?',[
+    Alert.alert('Přidat do košíku', 'Chcete přidat jídelníček do košíku?', [
       {
         text: 'Zrušit'
       },
@@ -139,12 +139,12 @@ export default function Menu({ navigation }) {
           </View>
         ) : (
           <View className="p-2 justify-center items-center">
-            <Text className="text-xl font-bold text-slate-900">Vypadá to, že ještě nemáte nastavené údaje. Můžete to kdykoliv změnit výše v ikoně profilu.</Text>
+            <Text className="text-xl font-bold text-slate-900 w-[90%] text-center">Vypadá to, že ještě nemáte nastavené údaje. Můžete to kdykoliv změnit výše v ikoně profilu.</Text>
           </View>
         )
         }
       </View>
-      
+
       <View className="text-center">
 
         {nextSevenDays.map((day, index) => (

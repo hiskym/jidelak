@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { useUserStore } from '../store/UserStore';
@@ -25,7 +25,6 @@ export default function SaveCart({ setShowDetails }) {
     };
 
     const handleDetailsCancel = () => {
-        console.log('Picking canceled');
         setShowDetails(false);
         setSelectedDay('');
     }

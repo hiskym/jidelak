@@ -9,7 +9,7 @@ import HistoricDay from '../components/HistoricDay'
 import MealDayFilter from '../components/MealDayFilter';
 import { getRecipeData } from '../utils/cacheUtils';
 
-export default function MealsHistory({navigation}) {
+export default function MealsHistory({ navigation }) {
 
   const currentDate = new Date();
 
@@ -43,7 +43,7 @@ export default function MealsHistory({navigation}) {
       mealsQuery = query(mealsRef, where('userId', '==', user.uid), where('day', '<=', currentDate), where('day', '>=', dateMinusTen));
     }
     const unsubscribe = onSnapshot(mealsQuery, async (querySnapshot) => {
-      
+
       try {
 
         const mealsData = [];
@@ -90,32 +90,31 @@ export default function MealsHistory({navigation}) {
 
   const [showDetails, setShowDetails] = useState(false);
 
-  
+
 
   return (
     <ScrollView className="flex flex-col bg-white">
       <View className="bg-teal-50 shadow-sm w-full rounded-b-2xl pb-5 h-max mb-2">
         {loading && <ActivityIndicator size="small" color="tomato" className="flex-1 justify-center rounded-sm scale-150 p-2" />}
-        {!loading && (
+        {!loading && (
           <View className="flex-row justify-center py-5 shadow-sm">
             <IconButton icon={"analytics-outline"} onPress={() => navigation.navigate('Analytics')} />
-            {/* <IconButton icon={"build"} onPress={() => console.log(meals)} /> */}
             <IconButton icon={"filter"} onPress={() => setShowDetails(true)} />
           </View>
         )}
-        
+
         {showDetails && (
           <View className="items-center">
             <MealDayFilter setShowDetails={setShowDetails} selectedDay={selectedDay} setSelectedDay={setSelectedDay} />
           </View>
         )}
         <View className="">
-          {meals && meals.length >= 2 ? (
+          {meals && meals.length >= 2 ? (
             <Text className="text-lg text-center m-2 text-slate-900">Zde vidíte posledních 10 dní vašeho stravování. Pokud vás zajímá jiný den, můžete filtrovat.</Text>
           ) : null}
         </View>
       </View>
-      
+
       <View className="text-center">
         {!selectedDay ? (lastTenDays.map((day, index) => (
           <View key={index} className={`w-full min-h-[96px] items-center ${index % 2 === 0 ? 'bg-white' : 'bg-gray-100 rounded-2xl my-1 shadow-sm'} py-2`}>
@@ -133,12 +132,11 @@ export default function MealsHistory({navigation}) {
               <Text className="font-bold text-lg text-slate-900">{day.day}</Text>
               <Text className="text-slate-900">{day.date}. {day.month}. {day.year}</Text>
               <View className="border-b-black border-[0.5px] w-[90%]" />
-  
+
               {meals && meals.some(meal => formatDate(meal.day) === `${day.month}/${day.date}/${day.year}`) ? (
                 <HistoricDay meals={meals} day={day} />
               ) : <Text className="text-base mt-2 text-slate-900">Pro tento den nebyly zaznamenány žádné pokrmy.</Text>}
             </View>)))}
-        {/* { console.log(meals)} */}
       </View>
     </ScrollView>
   )

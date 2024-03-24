@@ -14,8 +14,6 @@ export default function ShoppingList({ navigation }) {
 
     const { cart, setCart, clearCart, addToCartItem, removeFromCart } = useCartStore();
 
-    // const [cart, setCart] = useState([{ "amount": 250, "title": "studená voda", "unit": "ml" }, { "amount": 1, "title": "sůl", "unit": "lžička" }]);
-
     const [modalOpen, setModalOpen] = useState(false);
 
     const { user } = useUserStore();
@@ -35,23 +33,23 @@ export default function ShoppingList({ navigation }) {
     return (
         <ScrollView className="flex flex-col flex-1 bg-white" nestedScrollEnabled={true}>
             <Modal visible={modalOpen} animationType="slide" className="bg-slate-100">
-                    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                        <View className="flex-col flex-1 justify-between m-5 mt-20 items-center">
-                            <IconButton
-                                icon='close'
-                                onPress={() => setModalOpen(false)}
-                            />
-                            <ShoppingListForm addToCart={handleAddToCart} />
-                        </View>
-                    </TouchableWithoutFeedback>
-                </Modal>
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                    <View className="flex-col flex-1 justify-between m-5 mt-20 items-center">
+                        <IconButton
+                            icon='close'
+                            onPress={() => setModalOpen(false)}
+                        />
+                        <ShoppingListForm addToCart={handleAddToCart} />
+                    </View>
+                </TouchableWithoutFeedback>
+            </Modal>
             <View className="items-center bg-teal-50 py-5 rounded-b-xl mb-2 shadow-sm">
                 <View className="flex-row justify-center">
                     <IconButton icon={"add"} onPress={() => setModalOpen(true)} />
                     <IconButton icon={"trash"} onPress={() => handleClearCart(clearCart)} />
                     {user && (
                         <>
-                            <IconButton icon={"heart"} onPress={() => setShowDetails(true)} />
+                            <IconButton icon={"heart"} onPress={() => setShowDetails(!showDetails)} color={showDetails === true && '#0D9488'} />
                             <IconButton icon={"calendar"} onPress={() => navigation.navigate('CartHistory')} />
                         </>
                     )}
@@ -75,7 +73,7 @@ export default function ShoppingList({ navigation }) {
                     />
                 )}
             </View>
-                
+
             <View className="h-5"></View>
         </ScrollView>
     )

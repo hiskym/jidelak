@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Formik } from 'formik'
 import * as yup from 'yup';
 import { usersRef } from '../firebaseConfig';
@@ -7,13 +7,11 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { useUserStore } from '../store/UserStore';
 import { Picker } from '@react-native-picker/picker';
 import { styles } from '../styles/GlobalStyles';
-import { alergiesValues, activities, goalValues, ageValues, weightValues, heightValues, genderValues, dietValues } from '../utils/PickerValues';
-
-// dotaznik, aby se cloveku vytvoril sam jidelnicek
+import { activities, goalValues, ageValues, weightValues, heightValues, genderValues, dietValues } from '../utils/PickerValues';
 
 const surveySchema = yup.object({
   activity: yup.string().required('Zvolte stupeň aktivity'),
-  alergies: yup.string().required('Zvolte své alergie').typeError('Zadejte své alergie'),
+  // alergies: yup.string().required('Zvolte své alergie').typeError('Zadejte své alergie'),
   age: yup.number().required('Zadejte svůj věk').min(1, 'Věk musí být alespoň 13 let').typeError('Věk musí být číslo'),
   weight: yup.number().required('Zadejte svoji váhu v kg').min(1, 'Váha musí být alespoň 20 kg').typeError('Váha musí být číslo'),
   height: yup.number().required('Zadejte svoji výšku cm').min(1, 'Výška musí být alespoň 100 cm').typeError('Výška musí být číslo'),
@@ -28,7 +26,7 @@ export default function Survey({ navigation }) {
 
   const [alergies, setAlergies] = useState([]);
 
-  const [diet, setDiet] = useState([]); //musi byt array
+  const [diet, setDiet] = useState([]);
 
   const [macros, setMacros] = useState({});
 
@@ -38,6 +36,8 @@ export default function Survey({ navigation }) {
   const [activity, setActivity] = useState('');
   const [goal, setGoal] = useState('');
   const [gender, setGender] = useState('');
+
+  const [open, setOpen] = useState(false);
 
   const calculate = async (weight, height, age, gender, activity, goal) => {
     try {
@@ -136,7 +136,7 @@ export default function Survey({ navigation }) {
             {
               text: 'OK',
               onPress: () => {
-                console.log('Macros set.')
+                // console.log('Macros set.')
                 navigation.goBack()
               }
             }
@@ -180,7 +180,16 @@ export default function Survey({ navigation }) {
         initialValues={{ activity: activity, alergies: alergies, age: age, weight: weight, height: height, gender: gender, goal: goal, diet: diet }}
         validationSchema={surveySchema}
         onSubmit={(values, actions) => {
-          handleUserInfo(values.activity, values.alergies.split(','), parseFloat(values.age), parseFloat(values.weight), parseFloat(values.height), values.gender, values.goal, values.diet.split(','))
+          handleUserInfo(
+            values.activity,
+            // values.alergies.split(','), //alergies for later use
+            values.alergies,
+            parseFloat(values.age),
+            parseFloat(values.weight),
+            parseFloat(values.height),
+            values.gender, values.goal,
+            values.diet.split(',')
+          )
           actions.resetForm();
         }}
       >
@@ -198,7 +207,8 @@ export default function Survey({ navigation }) {
             </Picker>
             <Text className="text-red-600">{props.touched.activity && props.errors.activity}</Text>
 
-            <Picker
+            {/* alergies for later use */}
+            {/* <Picker
               selectedValue={props.values.alergies}
               onValueChange={props.handleChange('alergies')}
               style={styles.pickerSurvey}
@@ -207,7 +217,7 @@ export default function Survey({ navigation }) {
                 <Picker.Item key={key} label={alergy.label} value={alergy.value.join(',')} />
               ))}
             </Picker>
-            <Text className="text-red-600">{props.touched.alergies && props.errors.alergies}</Text>
+            <Text className="text-red-600">{props.touched.alergies && props.errors.alergies}</Text> */}
 
             <Picker
               selectedValue={props.values.age}
@@ -228,7 +238,6 @@ export default function Survey({ navigation }) {
                 props.setFieldValue('weight', weightValue)
               }}
               style={styles.pickerSurvey}
-              // itemStyle={{height: 64}}
             >
               {weightValues.map((weightValue, key) => (
                 <Picker.Item key={key} label={weightValue.label} value={weightValue.value} />

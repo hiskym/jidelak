@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "jidelak",
+    "name": "Jídelák",
     "slug": "jidelak",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,22 +15,26 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.hiskym.jidelak"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": [
-        "android.permission.DETECT_SCREEN_CAPTURE"
-      ]
+      "package": "com.hiskym.jidelak"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "6138f883-6344-49ba-8515-aa30f47af0e3"
+      }
+    }
   }
 }

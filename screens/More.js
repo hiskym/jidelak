@@ -1,14 +1,12 @@
-import { View, Text, Button, Alert, TouchableOpacity } from 'react-native'
+import { View, Text, Alert, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { FIREBASE_AUTH } from '../firebaseConfig'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useUserStore } from '../store/UserStore'
-import { usersRef } from '../firebaseConfig'
-import { doc, getDoc } from 'firebase/firestore'
 import { useCartStore } from '../store/CartStore'
 import { clearCache } from '../utils/cacheUtils'
+import { getUsername } from '../utils/userUtils'
 
-//screen for settings and about
 export default function More({ navigation }) {
 
   const { user } = useUserStore();
@@ -19,26 +17,12 @@ export default function More({ navigation }) {
 
   useEffect(() => {
     if (user && user.uid) {
-      getUsername();
+      getUsername(user.uid, setUsername);
     }
 
   }, [user])
 
-  const getUsername = async () => {
-    try {
-      const userDoc = doc(usersRef, user.uid);
-      const userDocSnapshot = await getDoc(userDoc);
-      if (userDocSnapshot.exists()) {
-        const username = userDocSnapshot.data().name;
 
-        const newUsername = username || '';
-
-        setUsername(newUsername);
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
 
   const handleLogout = () => {
     try {
@@ -60,8 +44,6 @@ export default function More({ navigation }) {
     } catch (error) {
       console.error('error:', error);
     }
-
-
   }
 
   return (

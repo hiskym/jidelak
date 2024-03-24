@@ -1,4 +1,4 @@
-import { View, TouchableOpacity} from 'react-native'
+import { View, TouchableOpacity } from 'react-native'
 import React from 'react'
 import RecipeCard from './RecipeCard'
 

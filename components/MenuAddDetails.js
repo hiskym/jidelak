@@ -19,7 +19,6 @@ export default function MenuAddDetails({ setShowDetails, userId, recipeId }) {
 
     const handleDetailsConfirm = () => {
 
-        // addToMenu(selectedDay);
         if (selectedDay === '') {
             Alert.alert('Chyba!', 'Musíte vybrat den', [
                 { text: 'OK' }
@@ -35,11 +34,6 @@ export default function MenuAddDetails({ setShowDetails, userId, recipeId }) {
             setShowDetails(false);
             addToMenu(recipeId, userId, selectedDay, selectedType, note);
         }
-
-
-        console.log(selectedDay);
-        console.log(selectedType);
-        console.log(note)
     };
 
     const handleDetailsCancel = () => {
@@ -61,7 +55,7 @@ export default function MenuAddDetails({ setShowDetails, userId, recipeId }) {
     }
 
     return (
-        <View className="flex border rounded-lg w-[90%] items-center justify-center p-2 m-2">
+        <View className="flex border rounded-lg w-[90%] items-center justify-center p-2 m-2 bg-white">
             <Text className="text-lg font-bold my-1 text-slate-900">Kdy si chcete jídlo dát? 👀</Text>
             <View className="flex flex-row justify-evenly my-1">
                 <TouchableOpacity onPress={() => setDatePickerVisibility(true)}>

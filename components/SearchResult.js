@@ -20,7 +20,7 @@ export default function SearchResult({ search, setSearch, handleClear, handleSea
                 onChangeText={updateSearch}
                 onClear={handleClear}
                 value={search}
-                containerStyle={{backgroundColor: '#F0FDFA', borderTopWidth: 0, borderBottomWidth: 0}}
+                containerStyle={{ backgroundColor: '#F0FDFA', borderTopWidth: 0, borderBottomWidth: 0 }}
             />
 
             {results.length > 0 && (

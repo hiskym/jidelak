@@ -13,7 +13,7 @@ const itemSchema = yup.object({
     unit: yup.string().required('Je nutné zadat jednotku').min(1)
 })
 
-export default function ShoppingListForm({addToCart}) {
+export default function ShoppingListForm({ addToCart }) {
     return (
         <View className="flex flex-auto">
             <Formik
@@ -21,7 +21,7 @@ export default function ShoppingListForm({addToCart}) {
                 validationSchema={itemSchema}
                 onSubmit={(values, actions) => {
                     actions.resetForm();
-                    addToCart({title: values.title.toLowerCase(), amount: parseFloat(values.amount), unit: values.unit.toLowerCase()});
+                    addToCart({ title: values.title.toLowerCase(), amount: parseFloat(values.amount), unit: values.unit.toLowerCase() });
                 }}
             >
                 {(props) => (
@@ -51,7 +51,7 @@ export default function ShoppingListForm({addToCart}) {
                                 props.setFieldValue('unit', unitValue)
                             }}
                             style={styles.pickerSurvey}
-                            >
+                        >
                             {unitValues.map((unitValue, key) => (
                                 <Picker.Item key={key} label={unitValue.label} value={unitValue.value} />
                             ))}

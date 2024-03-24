@@ -23,14 +23,12 @@ export default function CartHistory({ navigation }) {
     return (
         <ScrollView className="">
             {loading && <ActivityIndicator size="small" color="tomato" className="flex-1 justify-center rounded-sm scale-150" />}
-
-            {/* <Button title='carts' onPress={() => { console.log(cartsData) }} /> */}
             {cartsData.length === 0 ? (
                 <Text className="text-center mt-12 text-xl text-slate-900">Nemáte uložený žádný nákupní seznam. Přidejte si nějaký!</Text>
-            ): (
+            ) : (
                 <CartItems carts={cartsData} navigation={navigation} />
             )}
-            
+
         </ScrollView>
     )
 }

@@ -1,4 +1,4 @@
-import { Button, Text, ActivityIndicator, View } from 'react-native'
+import { Text, ActivityIndicator, View } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import RecipeArea from '../components/RecipeArea'
 import { ScrollView } from 'react-native'
@@ -7,8 +7,6 @@ import RecipeFilters from '../components/RecipeFilters'
 import SearchResult from '../components/SearchResult';
 import { handleSearch, handleClear } from '../utils/SearchUtils';
 import IconButton from '../components/IconButton'
-
-// getAllRecipes();
 
 export default function Recipes({ navigation }) {
 
@@ -81,7 +79,7 @@ export default function Recipes({ navigation }) {
   }
 
   return (
-    <ScrollView className="flex-1 ">
+    <ScrollView className="flex-1">
       <View className="bg-teal-50 mb-2 shadow-sm rounded-2xl h-max">
         <SearchResult
           search={search}
@@ -93,18 +91,18 @@ export default function Recipes({ navigation }) {
         />
         {search === '' && (
           <RecipeFilters
-          recipes={recipes}
-          handleGetAllRecipes={handleGetAllRecipes}
-          handleClearFilter={handleClearFilter}
-          setTimeQuery={setTimeQuery}
-          setIngredient={setIngredient}
-          setCalories={setCalories}
-          setCategory={setCategory}
-        />
+            recipes={recipes}
+            handleGetAllRecipes={handleGetAllRecipes}
+            handleClearFilter={handleClearFilter}
+            setTimeQuery={setTimeQuery}
+            setIngredient={setIngredient}
+            setCalories={setCalories}
+            setCategory={setCategory}
+          />
         )
         }
       </View>
-      
+
       {loading && <ActivityIndicator size="small" color="tomato" className="flex-1 justify-center rounded-sm scale-150" />}
       {err && <Text className="text-center text-slate-900">Chyba při načítání. Zkuste to prosím později.</Text>}
       {recipes.length === 0 && <Text className="text-center text-slate-900">Vyberte si jednu z možností a zobrazte recepty. 😉</Text>}
@@ -112,7 +110,7 @@ export default function Recipes({ navigation }) {
       {searchQuery !== '' && recipes.length === 0 && <Text className="text-center text-slate-900">Pro hledaný výraz "{searchQuery}" nebyla nalezena shoda. Zkuste něco jiného.</Text>}
       {lastDocument !== null && recipes.length !== 0 && (
         <View className="items-center m-2">
-          <IconButton icon="reload" onPress={() => getAllRecipes(setLoading, setErr, lastDocument, setLastDocument, setRecipes) } disabled={searchQuery !== ''} />
+          <IconButton icon="reload" onPress={() => getAllRecipes(setLoading, setErr, lastDocument, setLastDocument, setRecipes)} disabled={searchQuery !== ''} />
         </View>
       )}
     </ScrollView>

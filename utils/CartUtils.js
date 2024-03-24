@@ -97,7 +97,7 @@ export const saveCart = async (userId, title, plannedBuy, date) => {
 
             await addDoc(cartsRef, cartObj);
 
-            console.log(cartObj)
+            // console.log(cartObj)
 
             Alert.alert('Úspěch!', 'Úspešně přidáno', [
                 { text: 'OK' }
@@ -121,7 +121,7 @@ export const fetchAllCarts = async (userId, setCartsData, setLoading) => {
                     plannedBuy: doc.data().plannedBuy
                 }
             }));
-            console.log(cartsData)
+            // console.log(cartsData)
             setCartsData(cartsData);
         } else {
             console.log('no carts found')
@@ -139,8 +139,8 @@ export const fetchCartData = async (cartId, setCartData, setCheckedSteps) => {
         const cartSnapshot = await getDoc(cartDoc);
 
         if (cartSnapshot.exists()) {
-            const {content, date, plannedBuy } = cartSnapshot.data();
-            const cartData = {content, date, plannedBuy}
+            const { content, date, plannedBuy } = cartSnapshot.data();
+            const cartData = { content, date, plannedBuy }
             setCartData(cartData);
             setCheckedSteps(new Array(cartData.content.length).fill(false))
         } else {
@@ -172,7 +172,7 @@ export const addToCartFullWeek = async (addToCartRecipe, meals, setLoading) => {
             setLoading(false);
             return;
         }
-        
+
         const recipeIds = meals.map(meal => meal.recipeId);
 
         const ingredientsData = [];
@@ -181,7 +181,7 @@ export const addToCartFullWeek = async (addToCartRecipe, meals, setLoading) => {
             const cachedIngredients = await getRecipeIngredients(recipeId)
 
             if (cachedIngredients) {
-                console.log(cachedIngredients)
+                // console.log(cachedIngredients)
                 for (const ingredient of cachedIngredients) {
                     ingredientsData.push(ingredient);
                 }
@@ -191,23 +191,23 @@ export const addToCartFullWeek = async (addToCartRecipe, meals, setLoading) => {
 
                 for (const docRef of recipeIngredientsSnapshot.docs) {
                     const { ingredientId, amount } = docRef.data();
-        
+
                     const ingredientDoc = await getDoc(doc(ingredientsRef, ingredientId));
-        
+
                     if (ingredientDoc.exists()) {
                         const { title, unit } = ingredientDoc.data();
-        
+
                         const ingredientData = { title, unit, amount };
-        
+
                         ingredientsData.push(ingredientData);
-        
+
                     } else {
                         console.error(`${ingredientId} not found.`);
                     }
                 }
             }
         }
-        console.log(ingredientsData);
+        // console.log(ingredientsData);
         if (ingredientsData.length !== 0) {
             addToCartRecipe(ingredientsData);
             const updatedCart = useCartStore.getState().cart;

@@ -1,13 +1,16 @@
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+// import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from '@expo/vector-icons/Ionicons'
 import MoreNavigation from "./MoreNavigation";
 import RecipeNavigation from "./RecipeNavigation";
 import FavoriteNavigation from "./FavoriteNavigation";
 import MenuNavigation from "./MenuNavigation";
 import CartNavigation from "./CartNavigation";
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 
-const Tab = createBottomTabNavigator();
+// const Tab = createBottomTabNavigator();
+
+const Tab = createMaterialTopTabNavigator();
 
 export default function Root() {
     return (
@@ -30,16 +33,18 @@ export default function Root() {
                         iconName = focused ? 'information' : 'information-outline'
                     }
 
-                    return <Ionicons name={iconName} size={24} color="black" />
+                    return <Ionicons name={iconName} size={24} color={'#0F172A'} />
                 },
                 tabBarActiveTintColor: 'tomato',
-                tabBarInactiveTintColor: 'gray',
+                tabBarInactiveTintColor: '#0F172A',
+                tabBarLabelStyle: { textTransform: 'none', fontSize: 10 },
+                tabBarIndicatorStyle: {height: 0}
             })}
-            
+            tabBarPosition='bottom'
         >
             {/* <Tab.Screen name="Home" component={Home} /> */}
 
-            <Tab.Screen name="MenuNavigation" options={{ headerShown: false, title: "Jídelníček" }}>
+            <Tab.Screen name="MenuNavigation" options={{ headerShown: false, title: "Jídlo" }}>
                 {() => <MenuNavigation />}
             </Tab.Screen>
 

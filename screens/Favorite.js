@@ -10,7 +10,7 @@ import MenuAddDetails from '../components/MenuAddDetails';
 import { fetchRecipeIngredients, fetchRecipeData } from '../utils/recipeUtils';
 import { handleAddToCartRecipe } from '../utils/CartUtils';
 import { removeFromFavorites } from '../utils/FavoriteUtils';
-import { translateNutrition } from '../utils/recipeUtils';
+import { translateNutrition, translateAlergens, translateCategory } from '../utils/recipeUtils';
 import { handleCheckboxChange } from '../utils/checkboxUtils';
 
 export default function Favorite({ route, navigation }) {
@@ -18,9 +18,6 @@ export default function Favorite({ route, navigation }) {
     const { addToCartRecipe } = useCartStore();
 
     const { user } = useUserStore();
-
-    // const { name, alergens, category, cook_time, description, diet, image, nutrition, prepare_time, servings, steps, price } = route.params.data;
-    // const { id } = route.params.recipeId;
 
     const [recipeData, setRecipeData] = useState(null);
     const [recipeIngredients, setRecipeIngredients] = useState(null)
@@ -142,13 +139,12 @@ export default function Favorite({ route, navigation }) {
                 </View>
                 <View className="border-[0.5px] w-[60%] border-slate-300" />
                 <View className="flex flex-1 my-2 p-2 w-[90%]">
-                    <Text className="font-bold text-slate-900">Alergeny: {alergens.length > 1 ? alergens.join(', ') : alergens}</Text>
-                    <Text className="text-slate-900">Kategorie: {category.length > 1 ? category.join(', ') : category}</Text>
+                <Text className="font-bold text-slate-900">Alergeny: {alergens.length > 1 ? alergens.map(alergen => translateAlergens[alergen]).join(', ') : translateAlergens[alergens]}</Text>
+                    <Text className="text-slate-900">Kategorie: {category.length > 1 ? category.map(category => translateCategory[category]).join(', ') : translateCategory[category]}</Text>
                     <Text className="text-slate-900">Stravování: {diet.length > 1 ? diet.join(', ') : diet}</Text>
                     <Text className="font-bold text-xs mt-5 text-slate-900">Přibližná cena a výživové hodnoty jsou vždy uvedeny pro 1 porci.</Text>
                 </View>
 
-                {/* bottom empty area */}
                 <View className="h-5"></View>
             </View>
         </ScrollView>

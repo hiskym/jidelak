@@ -46,7 +46,7 @@ export default function App() {
     prepare();
   }, []);
 
-  
+
 
   const onLayoutRootView = useCallback(async () => {
     if (appIsReady) {
@@ -54,12 +54,11 @@ export default function App() {
     }
   }, [appIsReady]);
 
-  if (!appIsReady){
+  if (!appIsReady) {
     return (<ActivityIndicator size="large" color="tomato" className="flex-1 justify-center rounded-sm scale-150" />)
   }
   return (
     <View className="flex-1" onLayout={onLayoutRootView}>
-      {/* <Root cart={cart} setCart={setCart} favorites={favorites} setFavorites={setFavorites} /> */}
       <AppNavigation />
     </View>
   )

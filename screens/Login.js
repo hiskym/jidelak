@@ -28,19 +28,17 @@ export default function Login({ navigation }) {
                 error.message = "Neplatné přihlašovací údaje."
             }
             console.log(error.message);
-            
+
             Alert.alert('Přihlášení se nezdařilo', error.message, [
                 {
-                  text:'OK'
+                    text: 'OK'
                 }
-              ])
+            ])
         }
     }
 
-
-
     return (
-        
+
         <ScrollView className="flex flex-auto m-5">
             <Formik
                 initialValues={{ email: email, password: password }}
@@ -51,23 +49,23 @@ export default function Login({ navigation }) {
                 }}
             >
                 {(props) => (
-                                            
+
                     <View className="items-center mt-2">
-                            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                                <View className="flex w-full h-16 m-2">
-                                    <TextInput
+                        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                            <View className="flex w-full h-16 m-2">
+                                <TextInput
                                     value={props.values.email}
                                     placeholder='muj@email.cz'
                                     autoCapitalize='none'
                                     onChangeText={props.handleChange('email')}
                                     onBlur={props.handleBlur('email')}
                                     className="border border-stone-500 pl-2.5 h-16 text-lg rounded-lg" />
-                                </View>
-                            </TouchableWithoutFeedback>
-                            <Text className="text-red-600 mb-2">{props.touched.email && props.errors.email}</Text>
-                            <TouchableWithoutFeedback onPress={Keyboard.dismiss }>
-                                <View className="flex w-full h-16 m-2">
-                                    <TextInput
+                            </View>
+                        </TouchableWithoutFeedback>
+                        <Text className="text-red-600 mb-2">{props.touched.email && props.errors.email}</Text>
+                        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                            <View className="flex w-full h-16 m-2">
+                                <TextInput
                                     secureTextEntry={true}
                                     value={props.values.password}
                                     placeholder='&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;'
@@ -75,14 +73,14 @@ export default function Login({ navigation }) {
                                     onChangeText={props.handleChange('password')}
                                     onBlur={props.handleBlur('password')}
                                     className="border border-stone-500 pl-2.5 h-16 text-lg rounded-lg " />
-                                </View>
-                            </TouchableWithoutFeedback>
-                            <Text className="text-red-600 mb-5">{props.touched.password && props.errors.password}</Text>
-                            <TouchableOpacity onPress={props.handleSubmit} className="bg-teal-600 rounded-xl py-3 px-5">
+                            </View>
+                        </TouchableWithoutFeedback>
+                        <Text className="text-red-600 mb-5">{props.touched.password && props.errors.password}</Text>
+                        <TouchableOpacity onPress={props.handleSubmit} className="bg-teal-600 rounded-xl py-3 px-5">
                             <Text className="text-xl text-white font-bold">Přihlásit se</Text>
-                            </TouchableOpacity>
-                        
-                        
+                        </TouchableOpacity>
+
+
                     </View>
                 )}
             </Formik>
@@ -90,7 +88,7 @@ export default function Login({ navigation }) {
             <View className="items-center">
                 <Text className="text-base m-2 text-slate-900">Ještě nemáte svůj účet?</Text>
                 <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-                        <Text className="text-xl text-blue-500 font-bold">Vytvořit účet</Text>
+                    <Text className="text-xl text-blue-500 font-bold">Vytvořit účet</Text>
                 </TouchableOpacity>
             </View>
 
