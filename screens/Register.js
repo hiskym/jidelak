@@ -12,7 +12,11 @@ import About from './About';
 
 const loginSchema = yup.object({
   email: yup.string().email('Špatně zadaný email').required('Pro registraci je nutné zadat email.'),
-  password: yup.string().required('Musíte si zvolit heslo').min(8, 'Heslo je moc krátké'),
+  password: yup.string().required('Musíte si zvolit heslo')
+    .min(8, 'Heslo je moc krátké').matches(/[0-9]/, 'Heslo musí obsahovat alespoň 1 číslo')
+    .matches(/[a-z]/, 'Heslo musí obsahovat alespoň 1 malé písmeno')
+    .matches(/[A-Z]/, 'Heslo musí obsahovat alespoň 1 velké písmeno')
+    .matches(/[^\w]/, 'Heslo musí obsahovat alespoň 1 symbol'),
   confirmpassword: yup.string().oneOf([yup.ref('password')], 'Hesla nejsou stejná'),
   username: yup.string().required('Zadejte své jméno').min(3)
 })
