@@ -9,7 +9,7 @@ export default function Chart({ data }) {
 
     return (
         <>
-            <View style={{ height: 300 }}>
+            <View style={{ height: 300, padding: 20 }}>
                 <CartesianChart
                     data={data}
                     xKey="day"

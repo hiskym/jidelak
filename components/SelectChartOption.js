@@ -37,7 +37,7 @@ export default function SelectChartOption({ setInterval, interval }) {
             {interval === '' && <Text className="text-xl text-center m-2">Pro jaké období chcete zobrazit statistiky?</Text>}
             <View className="flex flex-row justify-evenly m-2">
                 <TouchableOpacity onPress={() => setShowPicker(true)}>
-                    <Text className="font-bold text-blue-500 text-lg"> {interval !== '' ? `Období: ${showIntervalName()}` : 'Vyberte období'}</Text>
+                    <Text className="font-bold text-blue-500 text-xl"> {interval !== '' ? `Období: ${showIntervalName()}` : 'Vyberte období'}</Text>
                 </TouchableOpacity>
             </View>
             {showPicker && (

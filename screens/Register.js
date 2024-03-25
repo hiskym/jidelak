@@ -105,6 +105,7 @@ export default function Register({ navigation }) {
                 <TextInput
                   value={props.values.email}
                   placeholder='muj@email.cz'
+                  placeholderTextColor={'gray'}
                   autoCapitalize='none'
                   onChangeText={props.handleChange('email')}
                   onBlur={props.handleBlur('email')}
@@ -118,6 +119,7 @@ export default function Register({ navigation }) {
                 <TextInput
                   value={props.values.username}
                   placeholder='Jan Novák'
+                  placeholderTextColor={'gray'}
                   autoCapitalize='none'
                   onChangeText={props.handleChange('username')}
                   onBlur={props.handleBlur('username')}
@@ -132,6 +134,7 @@ export default function Register({ navigation }) {
                   secureTextEntry={true}
                   value={props.values.password}
                   placeholder='&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;'
+                  placeholderTextColor={'gray'}
                   autoCapitalize='none'
                   onChangeText={props.handleChange('password')}
                   onBlur={props.handleBlur('password')}
@@ -146,6 +149,7 @@ export default function Register({ navigation }) {
                   secureTextEntry={true}
                   value={props.values.confirmPassword}
                   placeholder='&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;'
+                  placeholderTextColor={'gray'}
                   autoCapitalize='none'
                   onChangeText={props.handleChange('confirmPassword')}
                   onBlur={props.handleBlur('confirmPassword')}

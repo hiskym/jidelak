@@ -4,7 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import IconButton from './IconButton';
 import { timeValues, ingredientValues, caloriesValues, categoryValues } from '../utils/PickerValues';
 import { styles } from '../styles/GlobalStyles';
-import MultiSelect from 'react-native-multiple-select';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 
 export default function RecipeFilters({ recipes, handleClearFilter, handleGetAllRecipes, setTimeQuery, setIngredient, setCalories, setCategory }) {
@@ -13,13 +13,15 @@ export default function RecipeFilters({ recipes, handleClearFilter, handleGetAll
 
     const [showIngredientPicker, setShowIngredientPicker] = useState(false);
 
+    const [open, setOpen] = useState(false);
+
     const [showCaloriesPicker, setShowCaloriesPicker] = useState(false);
 
     const [showCategoryPicker, setShowCategoryPicker] = useState(false);
 
     const [time, setTime] = useState(0)
 
-    const [selectedIngredient, setSelectedIngredient] = useState('');
+    const [selectedIngredient, setSelectedIngredient] = useState([]);
 
     const [selectedCalories, setSelectedCalories] = useState(0);
 
@@ -30,10 +32,10 @@ export default function RecipeFilters({ recipes, handleClearFilter, handleGetAll
             setTimeQuery(time)
             setShowTimePicker(false)
             setTime(0);
-        } else if (filterCategory === 'ingredient' && selectedIngredient !== '') {
+        } else if (filterCategory === 'ingredient' && selectedIngredient[0] !== '') {
             setIngredient(selectedIngredient);
             setShowIngredientPicker(false)
-            setSelectedIngredient('');
+            setSelectedIngredient([]);
         } else if (filterCategory === 'calories' && selectedCalories !== '') {
             setCalories(selectedCalories);
             setShowCaloriesPicker(false)
@@ -53,6 +55,7 @@ export default function RecipeFilters({ recipes, handleClearFilter, handleGetAll
         if (pickerCategory === 'time') {
             setShowTimePicker(false)
         } else if (pickerCategory === 'ingredient') {
+            setOpen(false)
             setShowIngredientPicker(false)
         } else if (pickerCategory === 'calories') {
             setShowCaloriesPicker(false)
@@ -154,24 +157,41 @@ export default function RecipeFilters({ recipes, handleClearFilter, handleGetAll
             {showIngredientPicker && (
                 <View className="m-3">
                     <Text className="text-center text-lg font-bold text-slate-900">Filtrovat dle ingredience</Text>
-                    <Picker
-                        selectedValue={selectedIngredient}
-                        onValueChange={(ingredientValue) => setSelectedIngredient(ingredientValue)}
-                        style={styles.picker}
-                    >
-                        {ingredientValues.map((ingredientValue, key) => (
-                            <Picker.Item key={key} label={ingredientValue.label} value={ingredientValue.value} />
-                        ))}
-                    </Picker>
-
-                    {selectedIngredient !== '' && (
+                    <DropDownPicker
+                        open={open}
+                        value={selectedIngredient}
+                        items={ingredientValues}
+                        setOpen={setOpen}
+                        setValue={(ingredientValue) => setSelectedIngredient(ingredientValue)}
+                        setItems={ingredientValues}
+                        multiple={true}
+                        style={{maxHeight: 90, borderColor: 'rgb(120 113 108)'}}
+                        containerStyle={{marginTop: 10, marginBottom: 10, borderRadius: 8}}
+                        maxHeight={140}
+                        zIndex={1000}
+                        placeholder='Vyberte si ingredienci'
+                        placeholderStyle={{
+                            color: "black"
+                          }}
+                        listMode="MODAL"
+                        modalProps={{
+                            animationType: "slide",
+                            presentationStyle: "pageSheet",
+                          }}
+                        modalTitle="Vyberte ingredienci"
+                        modalTitleStyle={{fontWeight: 'bold', textAlign: 'center'}}
+                        modalContentContainerStyle={{fontSize: 18}}
+                        translation={{SELECTED_ITEMS_COUNT_TEXT: "Vybráno: {count}"}}
+                    />
+                    {selectedIngredient && selectedIngredient.length !== 0 && (
                         <View className="flex flex-row justify-evenly mb-5 text-slate-900">
                             <IconButton icon="close-sharp" onPress={() => handleCancel('ingredient')} color="#EF4444" />
-                            <IconButton icon="checkmark-sharp" onPress={() => handleConfirm('ingredient')} color="#0D9488" />
+                            <IconButton icon="checkmark-sharp" onPress={() => {handleConfirm('ingredient')}} color="#0D9488" />
                         </View>
                     )}
                 </View>
             )}
+            
             {showCaloriesPicker && (
                 <View className="m-3">
                     <Text className="text-center text-lg font-bold text-slate-900">Filtrovat dle kalorií</Text>

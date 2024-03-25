@@ -113,6 +113,39 @@ export const getAllRecipes = async (setLoading, setErr, lastDocument, setLastDoc
     setLoading(false)
 }
 
+export const getFewRecipes = async (setLoading, setErr, lastDocument, setLastDocument, setInitialRecipes) => {
+    setLoading(true);
+    setErr("");
+
+    try {
+        let recipeQuery = recipesRef;
+
+        recipeQuery = query(recipeQuery, limit(6));
+
+        const querySnapshot = await getDocs(recipeQuery);
+
+        const recipesData = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            data: {
+                image: doc.data().image,
+                name: doc.data().name,
+            }
+        }));
+
+        if (querySnapshot.docs.length > 0) {
+            setLastDocument(null);
+            setInitialRecipes([...recipesData]);
+        } else {
+            setLastDocument(null);
+        }
+    } catch (error) {
+        console.log("Error:", error);
+        setErr(error);
+        setInitialRecipes([]);
+    }
+    setLoading(false)
+}
+
 export const getRecipesByName = async (setLoading, setErr, searchQuery, setLastDocument, setRecipes) => {
     setLoading(true);
     setErr('');
@@ -216,62 +249,147 @@ export const getAllRecipesByCalories = async (setLoading, setErr, lastDocument, 
     setLoading(false)
 }
 
-export const getAllRecipesByIngredient = async (setLoading, setErr, setRecipes, ingredient) => {
+export const getAllRecipesByIngredient = async (setLoading, setErr, setRecipes, ingredients) => {
     setLoading(true);
-    setErr('')
+    setErr('');
 
     try {
+        let recipesData = [];
 
-        const ingredientQuery = query(ingredientsRef, where('title', '>=', ingredient), where('title', '<=', ingredient + '\uf8ff'), limit(10))
+        if (ingredients.length === 1) {
+            const ingredientQuery = query(ingredientsRef, where('title', '>=', ingredients[0]), where('title', '<=', ingredients[0] + '\uf8ff'), limit(10))
 
-        const ingredientsSnapshot = await getDocs(ingredientQuery);
+            const ingredientsSnapshot = await getDocs(ingredientQuery);
 
-        if (ingredientsSnapshot.empty) {
-            console.error('not found');
-            setErr('eror')
-            setLoading(false);
-            setRecipes([]);
-            return;
-        }
+            if (ingredientsSnapshot.empty) {
+                console.error('not found');
+                setErr('eror');
+                setLoading(false);
+                setRecipes([]);
+                return;
+            }
 
-        const ingredientId = ingredientsSnapshot.docs[0].id;
+            const ingredientId = ingredientsSnapshot.docs[0].id;
 
-        const recipeIngredientsQuery = query(recipeIngredientsRef, where('ingredientId', '==', ingredientId))
+            const recipeIngredientsQuery = query(recipeIngredientsRef, where('ingredientId', '==', ingredientId));
+            const recipeIngredientsSnapshot = await getDocs(recipeIngredientsQuery);
 
-        const recipeIngredientsSnapshot = await getDocs(recipeIngredientsQuery);
+            for (const recipeIngredientsDoc of recipeIngredientsSnapshot.docs) {
+                const { recipeId } = recipeIngredientsDoc.data();
 
-        const recipesData = [];
+                const cachedRecipe = await getRecipeData(recipeId);
 
-        for (const recipeIngredientsDoc of recipeIngredientsSnapshot.docs) {
-            const { recipeId } = recipeIngredientsDoc.data();
+                if (cachedRecipe) {
+                    const { image, name } = cachedRecipe;
+                    recipesData.push({
+                        id: recipeId,
+                        data: {
+                            image: image,
+                            name: name,
+                        }
+                    });
+                } else {
+                    const recipeDoc = await getDoc(doc(recipesRef, recipeId));
 
-            const recipeDoc = await getDoc(doc(recipesRef, recipeId));
-
-            if (recipeDoc.exists()) {
-                const { name, image } = recipeDoc.data()
-
-                const recipeData = {
-                    id: recipeId,
-                    data: {
-                        image: image,
-                        name: name,
+                    if (recipeDoc.exists()) {
+                        const { name, image } = recipeDoc.data();
+                        recipesData.push({
+                            id: recipeId,
+                            data: {
+                                image: image,
+                                name: name,
+                            }
+                        });
+                    } else {
+                        console.error('not found');
                     }
                 }
+            }
+        } else {
+            const recipeIds = new Set();
 
-                recipesData.push(recipeData)
-            } else {
-                console.error('not found')
+            for (const ingredient of ingredients) {
+                const ingredientQuery = query(ingredientsRef, where('title', '>=', ingredient), where('title', '<=', ingredient + '\uf8ff'), limit(10))
+
+                const ingredientsSnapshot = await getDocs(ingredientQuery);
+
+                if (ingredientsSnapshot.empty) {
+                    console.error('not found');
+                    setErr('error');
+                    setLoading(false);
+                    setRecipes([]);
+                    return;
+                }
+
+                const ingredientId = ingredientsSnapshot.docs[0].id;
+
+                const recipeIngredientsQuery = query(recipeIngredientsRef, where('ingredientId', '==', ingredientId));
+                const recipeIngredientsSnapshot = await getDocs(recipeIngredientsQuery);
+
+                const recipeIdsForIngredient = new Set();
+
+                for (const recipeIngredientsDoc of recipeIngredientsSnapshot.docs) {
+                    const { recipeId } = recipeIngredientsDoc.data();
+                    recipeIdsForIngredient.add(recipeId);
+                }
+
+                if (recipeIds.size === 0) {
+                    recipeIdsForIngredient.forEach(id => recipeIds.add(id));
+                } else {
+                    recipeIds.forEach(id => {
+                        if (!recipeIdsForIngredient.has(id)) {
+                            recipeIds.delete(id);
+                        }
+                    });
+                }
+            }
+
+            for (const recipeId of recipeIds) {
+
+                const cachedRecipe = await getRecipeData(recipeId);
+
+                if (cachedRecipe) {
+                    const { image, name } = cachedRecipe;
+                    recipesData.push({
+                        id: recipeId,
+                        data: {
+                            image: image,
+                            name: name,
+                        }
+                    });
+                } else {
+                    const recipeDoc = await getDoc(doc(recipesRef, recipeId));
+
+                    if (recipeDoc.exists()) {
+                        const { name, image } = recipeDoc.data();
+                        recipesData.push({
+                            id: recipeId,
+                            data: {
+                                image: image,
+                                name: name,
+                            }
+                        });
+                    } else {
+                        console.error('not found');
+                    }
+                }
             }
         }
-        setRecipes(recipesData)
 
+        if (recipesData.length === 0) {
+            setErr('err')
+        }
+
+        setRecipes(recipesData);
     } catch (error) {
-        console.error(error)
-        setErr(error)
-        setRecipes([])
+        console.error('Error:', error);
+        setErr(error.message);
+        setRecipes([]);
     }
-    setLoading(false)
-}
+
+    setLoading(false);
+};
+
 
 export const getAllRecipesByCategory = async (setLoading, setErr, lastDocument, setLastDocument, setRecipes, category) => {
     setLoading(true);

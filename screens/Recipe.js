@@ -93,7 +93,7 @@ export default function Recipe({ route }) {
                     <Text className="mr-2 text-slate-900">Příprava: {prepare_time} min</Text>
                     <Text className="mr-2 text-slate-900">Vaření: {cook_time} min</Text>
                     <Text className="mr-2 text-slate-900">Porce: {servings}</Text>
-                    <Text className="text-slate-900">Cena: ~{price} Kč</Text>
+                    {/* <Text className="text-slate-900">Cena: ~{price} Kč</Text> */}
                 </View>
                 <View className="border-[0.5px] w-[60%] border-slate-300" />
                 <View className="flex flex-1 my-2 p-2 w-[90%]">
@@ -150,7 +150,8 @@ export default function Recipe({ route }) {
                     <Text className="font-bold text-slate-900">Alergeny: {alergens.length > 1 ? alergens.map(alergen => translateAlergens[alergen]).join(', ') : translateAlergens[alergens]}</Text>
                     <Text className="text-slate-900">Kategorie: {category.length > 1 ? category.map(category => translateCategory[category]).join(', ') : translateCategory[category]}</Text>
                     <Text className="text-slate-900">Stravování: {diet.length > 1 ? diet.join(', ') : diet}</Text>
-                    <Text className="font-bold text-xs mt-5 text-slate-900">Přibližná cena a výživové hodnoty jsou vždy uvedeny pro 1 porci.</Text>
+                    {/* <Text className="font-bold text-xs mt-5 text-slate-900">Přibližná cena a výživové hodnoty jsou vždy uvedeny pro 1 porci.</Text> */}
+                    <Text className="font-bold text-xs mt-5 text-slate-900">Výživové hodnoty jsou vždy uvedeny pro 1 porci.</Text>
                 </View>
 
                 {/* bottom empty area */}

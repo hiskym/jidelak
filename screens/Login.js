@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, TextInput, Alert, Keyboard, TouchableWithoutFeedback, ScrollView } from 'react-native'
+import { View, Text, TouchableOpacity, TextInput, Alert, Keyboard, TouchableWithoutFeedback, ScrollView, Modal } from 'react-native'
 import React from 'react'
 import { useState } from 'react';
 import { FIREBASE_AUTH } from '../firebaseConfig';
@@ -6,6 +6,8 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import IconButton from '../components/IconButton';
+import PasswordReset from './PasswordReset';
 
 const loginSchema = yup.object({
     email: yup.string().email('Účet buď neexistuje nebo není správně zadaný').required('Zadejte email'),
@@ -13,6 +15,9 @@ const loginSchema = yup.object({
 })
 
 export default function Login({ navigation }) {
+
+    const [modalOpen, setModalOpen] = useState(false);
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const auth = FIREBASE_AUTH;
@@ -40,6 +45,19 @@ export default function Login({ navigation }) {
     return (
 
         <ScrollView className="flex flex-auto m-5">
+
+            <Modal visible={modalOpen} animationType="slide" className="bg-slate-100">
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                    <View className="flex-col flex-1 justify-between m-5 mt-20 items-center">
+                        <IconButton
+                            icon='close'
+                            onPress={() => setModalOpen(false)}
+                        />
+                        <PasswordReset />
+                    </View>
+                </TouchableWithoutFeedback>
+            </Modal>
+
             <Formik
                 initialValues={{ email: email, password: password }}
                 validationSchema={loginSchema}
@@ -56,6 +74,7 @@ export default function Login({ navigation }) {
                                 <TextInput
                                     value={props.values.email}
                                     placeholder='muj@email.cz'
+                                    placeholderTextColor={'gray'}
                                     autoCapitalize='none'
                                     onChangeText={props.handleChange('email')}
                                     onBlur={props.handleBlur('email')}
@@ -69,6 +88,7 @@ export default function Login({ navigation }) {
                                     secureTextEntry={true}
                                     value={props.values.password}
                                     placeholder='&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;'
+                                    placeholderTextColor={'gray'}
                                     autoCapitalize='none'
                                     onChangeText={props.handleChange('password')}
                                     onBlur={props.handleBlur('password')}
@@ -89,6 +109,9 @@ export default function Login({ navigation }) {
                 <Text className="text-base m-2 text-slate-900">Ještě nemáte svůj účet?</Text>
                 <TouchableOpacity onPress={() => navigation.navigate("Register")}>
                     <Text className="text-xl text-blue-500 font-bold">Vytvořit účet</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setModalOpen(true)}>
+                    <Text className="text-base text-blue-500 mt-10 font-bold">Zapomenuté heslo</Text>
                 </TouchableOpacity>
             </View>
 

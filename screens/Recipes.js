@@ -2,7 +2,7 @@ import { Text, ActivityIndicator, View } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import RecipeArea from '../components/RecipeArea'
 import { ScrollView } from 'react-native'
-import { getAllRecipes, getRecipesByName, getAllRecipesByCookTime, getAllRecipesByIngredient, getAllRecipesByCalories, getAllRecipesByCategory } from '../utils/recipeUtils'
+import { getAllRecipes, getRecipesByName, getAllRecipesByCookTime, getAllRecipesByIngredient, getAllRecipesByCalories, getAllRecipesByCategory, getFewRecipes } from '../utils/recipeUtils'
 import RecipeFilters from '../components/RecipeFilters'
 import SearchResult from '../components/SearchResult';
 import { handleSearch, handleClear } from '../utils/SearchUtils';
@@ -11,6 +11,8 @@ import IconButton from '../components/IconButton'
 export default function Recipes({ navigation }) {
 
   const [recipes, setRecipes] = useState([]);
+
+  const [ initialRecipes, setInitialRecipes ] = useState([]);
   const [search, setSearch] = useState("");
   const [searchQuery, setSearchQuery] = useState('')
   const [results, setResults] = useState([]);
@@ -29,36 +31,42 @@ export default function Recipes({ navigation }) {
 
   useEffect(() => {
     if (searchQuery !== '') {
+      setInitialRecipes([]);
       getRecipesByName(setLoading, setErr, searchQuery, setLastDocument, setRecipes);
     }
   }, [searchQuery]);
 
   useEffect(() => {
     if (timeQuery > 0) {
+      setInitialRecipes([]);
       getAllRecipesByCookTime(setLoading, setErr, lastDocument, setLastDocument, setRecipes, timeQuery)
     }
   }, [timeQuery])
 
   useEffect(() => {
     if (ingredient !== '') {
+      setInitialRecipes([]);
       getAllRecipesByIngredient(setLoading, setErr, setRecipes, ingredient)
     }
   }, [ingredient])
 
   useEffect(() => {
     if (calories !== '') {
+      setInitialRecipes([]);
       getAllRecipesByCalories(setLoading, setErr, lastDocument, setLastDocument, setRecipes, calories)
     }
   }, [calories])
 
   useEffect(() => {
     if (category !== '') {
+      setInitialRecipes([]);
       getAllRecipesByCategory(setLoading, setErr, lastDocument, setLastDocument, setRecipes, category)
     }
   }, [category])
 
   useEffect(() => {
     if (search === '') {
+      setInitialRecipes([]);
       setResults([]);
     }
   }, [search])
@@ -75,11 +83,16 @@ export default function Recipes({ navigation }) {
   }
 
   const handleGetAllRecipes = async () => {
+    setInitialRecipes([]);
     await getAllRecipes(setLoading, setErr, lastDocument, setLastDocument, setRecipes)
   }
 
+  useEffect(() => {
+    getFewRecipes(setLoading, setErr, lastDocument, setLastDocument, setInitialRecipes)
+  }, [])
+
   return (
-    <ScrollView className="flex-1">
+    <ScrollView className="flex-1" nestedScrollEnabled={true}>
       <View className="bg-teal-50 mb-2 shadow-sm rounded-2xl h-max">
         <SearchResult
           search={search}
@@ -105,7 +118,9 @@ export default function Recipes({ navigation }) {
 
       {loading && <ActivityIndicator size="small" color="tomato" className="flex-1 justify-center rounded-sm scale-150" />}
       {err && <Text className="text-center text-slate-900">Chyba při načítání. Zkuste to prosím později.</Text>}
-      {recipes.length === 0 && <Text className="text-center text-slate-900">Vyberte si jednu z možností a zobrazte recepty. 😉</Text>}
+      {recipes.length === 0 && <Text className="text-center text-slate-900">Vyberte si jednu z možností a zobrazte recepty.</Text>}
+      {initialRecipes && initialRecipes.length > 0 && <Text className="text-center text-slate-900">Nebo se podívejte na pár receptů níže. 😉</Text>}
+      {initialRecipes && <RecipeArea recipes={initialRecipes} navigation={navigation} />}
       <RecipeArea recipes={recipes} navigation={navigation} />
       {searchQuery !== '' && recipes.length === 0 && <Text className="text-center text-slate-900">Pro hledaný výraz "{searchQuery}" nebyla nalezena shoda. Zkuste něco jiného.</Text>}
       {lastDocument !== null && recipes.length !== 0 && (
