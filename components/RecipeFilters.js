@@ -165,33 +165,33 @@ export default function RecipeFilters({ recipes, handleClearFilter, handleGetAll
                         setValue={(ingredientValue) => setSelectedIngredient(ingredientValue)}
                         setItems={ingredientValues}
                         multiple={true}
-                        style={{maxHeight: 90, borderColor: 'rgb(120 113 108)'}}
-                        containerStyle={{marginTop: 10, marginBottom: 10, borderRadius: 8}}
+                        style={{ maxHeight: 90, borderColor: 'rgb(120 113 108)' }}
+                        containerStyle={{ marginTop: 10, marginBottom: 10, borderRadius: 8 }}
                         maxHeight={140}
                         zIndex={1000}
                         placeholder='Vyberte si ingredienci'
                         placeholderStyle={{
                             color: "black"
-                          }}
+                        }}
                         listMode="MODAL"
                         modalProps={{
                             animationType: "slide",
                             presentationStyle: "pageSheet",
-                          }}
+                        }}
                         modalTitle="Vyberte ingredienci"
-                        modalTitleStyle={{fontWeight: 'bold', textAlign: 'center'}}
-                        modalContentContainerStyle={{fontSize: 18}}
-                        translation={{SELECTED_ITEMS_COUNT_TEXT: "Vybráno: {count}"}}
+                        modalTitleStyle={{ fontWeight: 'bold', textAlign: 'center' }}
+                        modalContentContainerStyle={{ fontSize: 18 }}
+                        translation={{ SELECTED_ITEMS_COUNT_TEXT: "Vybráno: {count}" }}
                     />
-                    {selectedIngredient && selectedIngredient.length !== 0 && (
+                    {selectedIngredient && selectedIngredient.length !== 0 && (
                         <View className="flex flex-row justify-evenly mb-5 text-slate-900">
                             <IconButton icon="close-sharp" onPress={() => handleCancel('ingredient')} color="#EF4444" />
-                            <IconButton icon="checkmark-sharp" onPress={() => {handleConfirm('ingredient')}} color="#0D9488" />
+                            <IconButton icon="checkmark-sharp" onPress={() => { handleConfirm('ingredient') }} color="#0D9488" />
                         </View>
                     )}
                 </View>
             )}
-            
+
             {showCaloriesPicker && (
                 <View className="m-3">
                     <Text className="text-center text-lg font-bold text-slate-900">Filtrovat dle kalorií</Text>

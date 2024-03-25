@@ -12,7 +12,7 @@ export default function Recipes({ navigation }) {
 
   const [recipes, setRecipes] = useState([]);
 
-  const [ initialRecipes, setInitialRecipes ] = useState([]);
+  const [initialRecipes, setInitialRecipes] = useState([]);
   const [search, setSearch] = useState("");
   const [searchQuery, setSearchQuery] = useState('')
   const [results, setResults] = useState([]);
@@ -119,8 +119,8 @@ export default function Recipes({ navigation }) {
       {loading && <ActivityIndicator size="small" color="tomato" className="flex-1 justify-center rounded-sm scale-150" />}
       {err && <Text className="text-center text-slate-900">Chyba při načítání. Zkuste to prosím později.</Text>}
       {recipes.length === 0 && <Text className="text-center text-slate-900">Vyberte si jednu z možností a zobrazte recepty.</Text>}
-      {initialRecipes && initialRecipes.length > 0 && <Text className="text-center text-slate-900">Nebo se podívejte na pár receptů níže. 😉</Text>}
-      {initialRecipes && <RecipeArea recipes={initialRecipes} navigation={navigation} />}
+      {initialRecipes && initialRecipes.length > 0 && <Text className="text-center text-slate-900">Nebo se podívejte na pár receptů níže. 😉</Text>}
+      {initialRecipes && <RecipeArea recipes={initialRecipes} navigation={navigation} />}
       <RecipeArea recipes={recipes} navigation={navigation} />
       {searchQuery !== '' && recipes.length === 0 && <Text className="text-center text-slate-900">Pro hledaný výraz "{searchQuery}" nebyla nalezena shoda. Zkuste něco jiného.</Text>}
       {lastDocument !== null && recipes.length !== 0 && (

@@ -1,4 +1,3 @@
-// import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from '@expo/vector-icons/Ionicons'
 import MoreNavigation from "./MoreNavigation";
 import RecipeNavigation from "./RecipeNavigation";
@@ -6,9 +5,6 @@ import FavoriteNavigation from "./FavoriteNavigation";
 import MenuNavigation from "./MenuNavigation";
 import CartNavigation from "./CartNavigation";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-
-
-// const Tab = createBottomTabNavigator();
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -38,7 +34,7 @@ export default function Root() {
                 tabBarActiveTintColor: 'tomato',
                 tabBarInactiveTintColor: '#0F172A',
                 tabBarLabelStyle: { textTransform: 'none', fontSize: 10 },
-                tabBarIndicatorStyle: {height: 0}
+                tabBarIndicatorStyle: { height: 0 }
             })}
             tabBarPosition='bottom'
         >

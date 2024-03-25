@@ -89,7 +89,7 @@ export default function Analytics() {
                 {totalCalories !== 0 &&
                     <View className="items-center">
                         <View className="flex items-center mt-5 bg-slate-100 rounded-xl mb-2 shadow-sm w-full py-2">
-                        <Text className="text-xl font-bold text-slate-900">Celkem snězeno za období:</Text>
+                            <Text className="text-xl font-bold text-slate-900">Celkem snězeno za období:</Text>
                             <View className="flex flex-row items-center m-1 justify-between w-[90%]">
                                 <Text className="text-slate-900 text-lg">• Kalorie:</Text>
                                 <Text className="text-slate-900 text-lg">{totalCalories} kcal</Text>

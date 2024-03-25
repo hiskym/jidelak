@@ -1,12 +1,12 @@
 import { View, Text, TouchableWithoutFeedback, TextInput, Alert, Keyboard, TouchableOpacity } from 'react-native'
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { getAuth, sendPasswordResetEmail } from 'firebase/auth';
 
 const resetSchema = yup.object({
     email: yup.string().email('Špatně zadaný email').required('Je nutné zadat email.'),
-  })
+})
 
 export default function PasswordReset() {
 
@@ -19,28 +19,28 @@ export default function PasswordReset() {
 
             Alert.alert('Reset hesla', 'Na zadaný email byl odeslán odkaz na změnu hesla.', [
                 {
-                  text: 'OK',
+                    text: 'OK',
                 }
-              ])
+            ])
         } catch (error) {
             if (error.message) {
                 error.message = "Email je již využíván. "
-              }
-              console.log(error.message)
+            }
+            console.log(error.message)
         }
     }
 
     const handleReset = (email) => {
         Alert.alert('Reset hesla', 'Opravdu chcete resetovat heslo?', [
-          {
-            text: 'Zrušit'
-          },
-          {
-            text: 'Ano',
-            onPress: () => resetPassword(email)
-          }
+            {
+                text: 'Zrušit'
+            },
+            {
+                text: 'Ano',
+                onPress: () => resetPassword(email)
+            }
         ])
-      }
+    }
 
     return (
         <View className="flex flex-auto m-5 w-full">
@@ -67,7 +67,7 @@ export default function PasswordReset() {
                             </View>
                         </TouchableWithoutFeedback>
                         <Text className="text-red-600 mb-2">{props.touched.email && props.errors.email}</Text>
-                        
+
                         <TouchableOpacity onPress={props.handleSubmit} className="bg-teal-600 rounded-xl py-3 px-5">
                             <Text className="text-xl text-white font-bold">Obnovit heslo</Text>
                         </TouchableOpacity>
