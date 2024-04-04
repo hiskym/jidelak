@@ -7,6 +7,7 @@ import { getUsername } from '../utils/userUtils';
 import { updatePassword } from 'firebase/auth';
 import { setDoc, doc } from 'firebase/firestore';
 import { usersRef } from '../firebaseConfig';
+import { deleteAccount } from '../utils/userUtils';
 
 const userSchema = yup.object({
   password: yup.string().required('Musíte si zvolit heslo').min(8, 'Heslo je moc krátké'),
@@ -16,7 +17,7 @@ const userSchema = yup.object({
 
 export default function Settings({ navigation }) {
 
-  const { user } = useUserStore();
+  const { user, setUser } = useUserStore();
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setconfirmPassword] = useState('');
@@ -61,6 +62,22 @@ export default function Settings({ navigation }) {
       {
         text: 'OK',
         onPress: () => changeUserData(username, password)
+      }
+    ])
+  }
+
+  const handleDelete = (user, userId) => {
+    Alert.alert('Smazat účet', 'Opravdu chcete smazat účet? Toto nelze vrátit zpět.', [
+      {
+        text: 'Zrušit'
+      },
+      {
+        text: 'OK',
+        onPress: async () => {
+          await deleteAccount(user, userId)
+          setUser(null)
+          navigation.goBack();
+        }
       }
     ])
   }
@@ -130,7 +147,11 @@ export default function Settings({ navigation }) {
           )}
         </Formik>
       </View>
-
+      <View className="items-center mt-20">
+        <TouchableOpacity onPress={()=> handleDelete(user, user.uid)} className="rounded-xl py-3 px-5 border-red-600 border">
+          <Text className="text-xl text-red-600 font-bold text-center ">Smazat účet</Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   )
 }

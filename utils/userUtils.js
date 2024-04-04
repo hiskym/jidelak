@@ -1,5 +1,7 @@
-import { doc, getDoc } from "firebase/firestore";
-import { usersRef } from "../firebaseConfig";
+import { doc, getDoc, getDocs, query, where, deleteDoc } from "firebase/firestore";
+import { usersRef, mealsRef } from "../firebaseConfig";
+import { deleteUser } from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const fetchMacros = async (userId, setUserMacros) => {
   const userDoc = doc(usersRef, userId);
@@ -27,6 +29,31 @@ export const getUsername = async (userId, setUsername) => {
 
       setUsername(newUsername);
     }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const deleteAccount = async (user, userId) => {
+  try {
+    const userDoc = doc(usersRef, userId);
+
+    const mealsQuery = query(mealsRef, where('userId', '==', userId));
+    
+    const mealsSnapshot = await getDocs(mealsQuery);
+
+    if (!mealsSnapshot.empty){
+      mealsSnapshot.forEach(async (mealDoc) => await deleteDoc(mealDoc.ref))
+    } else {
+      console.log('empty')
+    }
+  
+    await deleteDoc(userDoc)
+    
+    await deleteUser(user)
+
+    await AsyncStorage.removeItem('user');
+
   } catch (error) {
     console.log(error)
   }
