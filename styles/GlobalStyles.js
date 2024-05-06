@@ -38,5 +38,14 @@ export const styles = StyleSheet.create({
         marginBottom: 10,
         backgroundColor: 'white'
     },
-
+    cardImage: {
+        width: '100%', 
+        height: '70%', 
+    },
+    detailImage: {
+        width: '100%', 
+        height: '100%', 
+        borderBottomLeftRadius: 10, 
+        borderBottomRightRadius: 10
+    }
 })

@@ -8,7 +8,7 @@ export default function RecipeArea({ recipes, navigation }) {
         <View className="flex flex-row flex-wrap justify-center">
             {recipes.map((recipe) => {
                 return (
-                    <TouchableOpacity key={recipe.id} onPress={() => { navigation.navigate('RecipeDetail', recipe) }}>
+                    <TouchableOpacity key={recipe.id} onPress={() => { navigation.navigate('RecipeDetail', recipe) }} className="shadow-sm">
                         <RecipeCard
                             image={recipe.data.image}
                             name={recipe.data.name}

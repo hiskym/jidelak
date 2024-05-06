@@ -7,7 +7,7 @@ export default function FavoriteArea({ favorites, navigation }) {
         <View className="flex flex-row flex-wrap justify-evenly mt-4">
             {favorites.map((favorite) => {
                 return (
-                    <TouchableOpacity key={favorite.recipeId} onPress={() => { navigation.navigate('FavoriteDetail', favorite) }}>
+                    <TouchableOpacity key={favorite.recipeId} onPress={() => { navigation.navigate('FavoriteDetail', favorite) }} className="shadow-sm">
                         <RecipeCard
                             image={favorite.data.image}
                             name={favorite.data.name}

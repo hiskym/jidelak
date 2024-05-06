@@ -456,7 +456,7 @@ export const translateAlergens = {
 }
 
 export const translateCategory = {
-    "breakfast": "anídaně",
+    "breakfast": "snídaně",
     "lunch": "oběd",
     "dinner": "večeře",
     "snac": "svačinka",

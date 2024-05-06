@@ -5,7 +5,7 @@ export const recipeNames = {
     D: ['Dýňová polévka', 'Dršťková polévka'],
     E: ['Enchiladas se špenátem'],
     F: ['Francouzské brambory', 'Fazolová polévka'],
-    G: ['Guláš hovězí'],
+    G: ['Guláš hovězí', 'Guláš hovězí s rýží'],
     H: ['Hovězí po sečuánsku', 'Hovězí steak s batáty'],
     I: ['Indické kari s bulgurem', 'Indická kuřecí směs'],
     J: ['Játra na cibulce', 'Jáhlová kaše se švestkami'],
@@ -14,15 +14,15 @@ export const recipeNames = {
     M: ['Míchaná vejce na cibulce', 'Minestrone'],
     N: ['Nudle s masem a žampiony'],
     O: ['Omeleta s parmezánem a česnekem'],
-    P: ['Pečené kuře', 'Pektinová omáčka'],
+    P: ['Pečené kuře', 'Pektinová omáčka', 'Proteinový koktejl', 'Proteinový koktejl s mlékem', 'Proteinový koktejl s mlékem a jahodami', 'Proteinový koktejl s mlékem a banánem'],
     Q: ['Quinoa salát s uzeným lososem'],
     R: ['Rib-eye steak na grilu s bylinkovym maslem'],
-    S: ['Sendvič s tuňákem', 'Špagety carbonara'],
+    S: ['Sendvič s tuňákem', 'Špagety carbonara', 'Svíčková na smetaně v rychlovarné konvici'],
     T: ['Tvaroh s ovocem a ořechy', 'Tuňákový salát'],
     U: ['Uzené maso se šťouchaným bramborem'],
     V: ['Vejce v rychlovarné konvici', 'Vajíčková pomazánka s avokádem', 'Vepřová plec na paprice', 'Vepřové medailonky se šťouchanými brambory'],
     W: ['Wrap s kuřecím'],
     X: [''],
-    Y: ['Yorkshírský puding'],
-    Z: ['Zapečené brambory']
+    Y: [''],
+    Z: ['']
 }

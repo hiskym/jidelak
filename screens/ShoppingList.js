@@ -58,15 +58,17 @@ export default function ShoppingList({ navigation }) {
                 {showDetails && <SaveCart setShowDetails={setShowDetails} />}
 
             </View>
-            <View className="items-center mx-5">
-                {cart.length === 0 ? (<Text className="text-center">Nákupní seznam je prázdný... Přidejte si něco 😉</Text>) : (
+            <View className="items-center">
+                {cart.length === 0 ? (<Text className="text-center mt-2">Nákupní seznam je prázdný... Přidejte si něco 😉</Text>) : (
                     <FlatList
                         data={cart}
                         scrollEnabled={false}
                         renderItem={({ item, index }) => (
-                            <View className="flex flex-row items-center w-96 m-1">
-                                <Checkbox value={checkedSteps[index]} onValueChange={() => handleCheckboxChange(index, checkedSteps, setCheckedSteps)} className="m-2" />
-                                <Text className="flex flex-shrink text-slate-900">{item.amount} {item.unit} {item.title}</Text>
+                            <View key={index} className={`flex flex-row justify-between items-center w-full px-5 py-1 m-1 ${index % 2 !== 0 && 'bg-gray-100 shadow-sm'}` }>
+                                <View className="flex flex-row items-center">
+                                    <Checkbox value={checkedSteps[index]} onValueChange={() => handleCheckboxChange(index, checkedSteps, setCheckedSteps)} className="m-2" />
+                                    <Text className={`flex flex-shrink text-base ${checkedSteps[index] ? 'text-slate-400' : 'text-slate-900'}`}>{item.amount} {item.unit} {item.title}</Text>
+                                </View>
                                 <IconButton icon={"trash"} onPress={() => handleRemoveCartItem(item, removeFromCart)} />
                             </View>
                         )}

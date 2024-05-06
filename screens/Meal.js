@@ -1,4 +1,4 @@
-import { View, Text, Image, FlatList, ActivityIndicator, Alert } from 'react-native'
+import { View, Text, FlatList, ActivityIndicator, Alert } from 'react-native'
 import Checkbox from 'expo-checkbox';
 import React from 'react'
 import { ScrollView } from 'react-native';
@@ -12,6 +12,8 @@ import { handleAddToCartRecipe } from '../utils/CartUtils';
 import { addToFavorites } from '../utils/FavoriteUtils';
 import { translateNutrition, translateAlergens, translateCategory } from '../utils/recipeUtils';
 import { removeFromMenu } from '../utils/menuUtils';
+import { Image } from 'expo-image';
+import { styles } from '../styles/GlobalStyles';
 
 export default function Meal({ route, navigation }) {
     const { user } = useUserStore();
@@ -58,11 +60,11 @@ export default function Meal({ route, navigation }) {
         <ScrollView className="flex flex-col" nestedScrollEnabled={true}>
             <View className="justify-center items-center flex flex-1">
                 <View className="relative w-full h-[200px] items-center">
-                    <Image style={{ width: '100%', height: '100%', resizeMode: 'cover', borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }} source={{ uri: image }} />
+                    <Image style={styles.detailImage} source={{ uri: image }} transition={1000} contentFit='cover' />
                 </View>
                 <Text className="text-3xl font-bold my-2 text-slate-900">{name}</Text>
                 <Text className="text-xl flex flex-shrink mx-3 mb-3 text-slate-900 w-[90%] text-center">{description}</Text>
-                <Text className="text-lg flex flex-shrink mx-3 mb-3 text-slate-900 w-[90%] text-center">Poznámka: {route.params.note}</Text>
+                {/* <Text className="text-lg flex flex-shrink mx-3 mb-3 text-slate-900 w-[90%] text-center">Poznámka: {route.params.note}</Text> */}
 
                 <View className="flex-row my-3">
                     <IconButton icon={"heart"} onPress={() => addToFavorites(route.params.recipeId, user.uid)} />
@@ -119,7 +121,7 @@ export default function Meal({ route, navigation }) {
                         renderItem={({ item, index }) => (
                             <View className="flex flex-row items-center m-1">
                                 <Checkbox value={checkedSteps[index]} onValueChange={() => handleCheckboxChange(index, checkedSteps, setCheckedSteps)} className="m-2" />
-                                <Text className="flex flex-shrink text-slate-900">{item}</Text>
+                                <Text className={`flex flex-shrink ${checkedSteps[index] ? 'text-slate-400' : 'text-slate-900'}`}>{item}</Text>
                             </View>
                         )}
                         keyExtractor={(item, index) => index.toString()}
